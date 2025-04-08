@@ -12,6 +12,7 @@ import socialReducer from './slices/socialSlice';
 import eventsReducer from './slices/eventsSlice';
 import notificationsReducer from './slices/notificationsSlice';
 import alertsReducer from './slices/alertsSlice';
+import reviewsReducer from './slices/reviewsSlice';
 
 
 // Configure the store
@@ -28,6 +29,8 @@ const store = configureStore({
     events: eventsReducer,
     notifications: notificationsReducer,
     alerts: alertsReducer,
+    reviews: reviewsReducer,
+
   },
   middleware: (getDefaultMiddleware) => 
     getDefaultMiddleware({

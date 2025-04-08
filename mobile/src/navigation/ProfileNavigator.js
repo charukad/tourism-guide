@@ -1,5 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+import ReviewNavigator from './ReviewNavigator';
 
 // Import screens
 import ProfileScreen from '../screens/profile/ProfileScreen';
@@ -53,6 +54,11 @@ const ProfileNavigator = () => {
           title: 'My Bookings',
         }}
       />
+      <Stack.Screen 
+  name="Reviews" 
+  component={ReviewNavigator} 
+/>
+      
     </Stack.Navigator>
   );
 };
