@@ -25,12 +25,20 @@ const GuideSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    verificationStatus: {
+      type: String,
+      enum: ['unsubmitted', 'pending', 'approved', 'rejected'],
+      default: 'unsubmitted',
+    },
     verificationDocuments: [
       {
         type: String, // URL to stored document
         description: String,
       },
     ],
+    verificationNotes: {
+      type: String, // Admin notes for rejected verification
+    },
     expertise: [String], // E.g., ['wildlife', 'history', 'cultural']
     languages: [String], // Languages spoken
     experience: {

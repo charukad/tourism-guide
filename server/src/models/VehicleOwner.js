@@ -25,12 +25,20 @@ const VehicleOwnerSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    verificationStatus: {
+      type: String,
+      enum: ['unsubmitted', 'pending', 'approved', 'rejected'],
+      default: 'unsubmitted',
+    },
     verificationDocuments: [
       {
         type: String, // URL to stored document
         description: String,
       },
     ],
+    verificationNotes: {
+      type: String, // Admin notes for rejected verification
+    },
     address: {
       street: String,
       city: String,
