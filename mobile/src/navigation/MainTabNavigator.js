@@ -36,6 +36,11 @@ const MainTabNavigator = () => {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textLight,
         headerShown: false,
+        tabBarStyle: {
+          height: 60,
+          paddingBottom: 10,
+          paddingTop: 10,
+        },
       })}
     >
       <Tab.Screen name="Explore" component={ExploreNavigator} />
