@@ -5,38 +5,32 @@ import { createStackNavigator } from '@react-navigation/stack';
 import ItinerariesScreen from '../screens/itinerary/ItinerariesScreen';
 import CreateItineraryScreen from '../screens/itinerary/CreateItineraryScreen';
 import ItineraryDetailScreen from '../screens/itinerary/ItineraryDetailScreen';
+import AddActivityScreen from '../screens/itinerary/AddActivityScreen';
+import ActivityDetailScreen from '../screens/itinerary/ActivityDetailScreen';
+import EditActivityScreen from '../screens/itinerary/EditActivityScreen';
+import EditItineraryScreen from '../screens/itinerary/EditItineraryScreen';
+import ItineraryMapScreen from '../screens/itinerary/ItineraryMapScreen';
+import LocationPickerScreen from '../screens/itinerary/LocationPickerScreen';
 
 const Stack = createStackNavigator();
 
 const ItineraryNavigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName="ItineraryList"
+      initialRouteName="Itineraries"
       screenOptions={{
-        headerBackTitleVisible: false,
+        headerShown: false,
       }}
     >
-      <Stack.Screen
-        name="ItineraryList"
-        component={ItinerariesScreen}
-        options={{ 
-          title: 'My Trips',
-        }}
-      />
-      <Stack.Screen
-        name="CreateItinerary"
-        component={CreateItineraryScreen}
-        options={{ 
-          title: 'Plan New Trip',
-        }}
-      />
-      <Stack.Screen
-        name="ItineraryDetail"
-        component={ItineraryDetailScreen}
-        options={({ route }) => ({ 
-          title: route.params?.name || 'Trip Details',
-        })}
-      />
+      <Stack.Screen name="Itineraries" component={ItinerariesScreen} />
+      <Stack.Screen name="CreateItinerary" component={CreateItineraryScreen} />
+      <Stack.Screen name="ItineraryDetail" component={ItineraryDetailScreen} />
+      <Stack.Screen name="AddActivity" component={AddActivityScreen} />
+      <Stack.Screen name="ActivityDetail" component={ActivityDetailScreen} />
+      <Stack.Screen name="EditActivity" component={EditActivityScreen} />
+      <Stack.Screen name="EditItinerary" component={EditItineraryScreen} />
+      <Stack.Screen name="ItineraryMap" component={ItineraryMapScreen} />
+      <Stack.Screen name="LocationPicker" component={LocationPickerScreen} />
     </Stack.Navigator>
   );
 };
