@@ -10,7 +10,13 @@
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
+
     },
+    "assets": [
+      "./assets/fonts/Roboto-Regular.ttf",
+      "./assets/fonts/Roboto-Medium.ttf",
+      "./assets/fonts/Roboto-Bold.ttf"
+    ],
     "assetBundlePatterns": [
       "**/*"
     ],
