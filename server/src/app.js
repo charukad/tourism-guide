@@ -12,6 +12,9 @@ const errorMiddleware = require('./middleware/error');
 // Import routes
 const routes = require('./routes');
 
+// Import Swagger config
+const { swaggerUi, swaggerDocs } = require('./config/swagger');
+
 // Initialize Express app
 const app = express();
 const server = http.createServer(app);
@@ -35,6 +38,9 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bo
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Swagger API Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 // API routes
 app.use('/api', routes);
 
@@ -50,6 +56,7 @@ const PORT = process.env.PORT || 5000;
 // Start server
 server.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);
 });
 
 // Handle unhandled promise rejections
