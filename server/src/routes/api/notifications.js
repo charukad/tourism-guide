@@ -1,50 +1,39 @@
 const express = require('express');
 const router = express.Router();
-const { body } = require('express-validator');
-const notificationsController = require('../../controllers/notifications');
 const { protect } = require('../../middleware/auth');
-const validationMiddleware = require('../../middleware/validation');
+const {
+  getNotifications,
+  getUnreadCount,
+  markAsRead,
+  markAllAsRead,
+  deleteNotification,
+  clearAllNotifications,
+  getNotificationSettings,
+  updateNotificationSettings,
+  resetNotificationSettings,
+  registerDevice
+} = require('../../controllers/notifications');
 
-// Protect all notification routes
-router.use(protect);
+// Base route: /api/notifications
 
-// @route   GET /api/notifications
-// @desc    Get all notifications for the logged-in user
-// @access  Private
-router.get('/', notificationsController.getNotifications);
+// Get notifications and handle unread count
+router.get('/', protect, getNotifications);
+router.get('/unread-count', protect, getUnreadCount);
 
-// @route   GET /api/notifications/unread-count
-// @desc    Get unread notification count
-// @access  Private
-router.get('/unread-count', notificationsController.getUnreadCount);
+// Mark notifications as read
+router.patch('/:id/read', protect, markAsRead);
+router.patch('/read-all', protect, markAllAsRead);
 
-// @route   PUT /api/notifications/:id/read
-// @desc    Mark a notification as read
-// @access  Private
-router.put('/:id/read', notificationsController.markAsRead);
+// Delete notifications
+router.delete('/:id', protect, deleteNotification);
+router.delete('/clear-all', protect, clearAllNotifications);
 
-// @route   PUT /api/notifications/read-all
-// @desc    Mark all notifications as read
-// @access  Private
-router.put('/read-all', notificationsController.markAllAsRead);
+// Notification settings
+router.get('/settings', protect, getNotificationSettings);
+router.put('/settings', protect, updateNotificationSettings);
+router.post('/settings/reset', protect, resetNotificationSettings);
 
-// @route   DELETE /api/notifications/:id
-// @desc    Delete a notification
-// @access  Private
-router.delete('/:id', notificationsController.deleteNotification);
-
-// @route   PUT /api/notifications/settings
-// @desc    Update notification settings
-// @access  Private
-router.put(
-  '/settings',
-  [
-    body('email').isBoolean().optional(),
-    body('push').isBoolean().optional(),
-    body('sms').isBoolean().optional(),
-    validationMiddleware
-  ],
-  notificationsController.updateSettings
-);
+// Device registration for push notifications
+router.post('/register-device', protect, registerDevice);
 
 module.exports = router;

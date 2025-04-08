@@ -16,6 +16,7 @@ const postRoutes = require('./api/posts');
 const commentRoutes = require('./api/comments');
 const reviewRoutes = require('./api/reviews');
 const notificationRoutes = require('./api/notifications');
+const alertRoutes = require('./api/alerts');
 const messageRoutes = require('./api/messages');
 const paymentRoutes = require('./api/payments');
 
@@ -34,6 +35,7 @@ router.use('/social/posts', postRoutes);
 router.use('/social/comments', commentRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/alerts', alertRoutes);
 router.use('/messages', messageRoutes);
 router.use('/payments', paymentRoutes);
 

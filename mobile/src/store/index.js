@@ -11,6 +11,8 @@ import bookingsReducer from './slices/bookingsSlice';
 import socialReducer from './slices/socialSlice';
 import eventsReducer from './slices/eventsSlice';
 import notificationsReducer from './slices/notificationsSlice';
+import alertsReducer from './slices/alertsSlice';
+
 
 // Configure the store
 const store = configureStore({
@@ -25,6 +27,7 @@ const store = configureStore({
     social: socialReducer,
     events: eventsReducer,
     notifications: notificationsReducer,
+    alerts: alertsReducer,
   },
   middleware: (getDefaultMiddleware) => 
     getDefaultMiddleware({
