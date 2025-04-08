@@ -34,13 +34,6 @@ exports.protect = async (req, res, next) => {
       );
     }
 
-    // Check if user is verified
-    if (!user.isVerified) {
-      return res.status(401).json(
-        errorResponse('Please verify your email to access this resource', 401)
-      );
-    }
-
     // Add user to request object
     req.user = user;
     next();

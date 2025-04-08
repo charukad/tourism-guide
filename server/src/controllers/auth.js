@@ -119,7 +119,7 @@ exports.login = async (req, res, next) => {
       );
     }
 
-    // Check if email is verified
+    // Check if email is verified (can be commented out during development)
     if (!user.isVerified) {
       return res.status(401).json(
         errorResponse('Please verify your email before logging in', 401)
@@ -155,6 +155,43 @@ exports.login = async (req, res, next) => {
     console.error('Login error:', error);
     res.status(500).json(
       errorResponse('Server error during login.', 500)
+    );
+  }
+};
+
+// @desc    Verify email address
+// @route   POST /api/auth/verify-email
+// @access  Public
+exports.verifyEmail = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+
+    // Find user with this verification token
+    const user = await User.findOne({
+      verificationToken: token,
+      verificationTokenExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json(
+        errorResponse('Invalid or expired verification token', 400)
+      );
+    }
+
+    // Update user verification status
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
+    await user.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Email verified successfully. You can now log in.',
+    });
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(500).json(
+      errorResponse('Server error during email verification', 500)
     );
   }
 };
@@ -203,7 +240,7 @@ exports.forgotPassword = async (req, res, next) => {
   } catch (error) {
     console.error('Forgot password error:', error);
     res.status(500).json(
-      errorResponse('Server error during password reset request.', 500)
+      errorResponse('Server error during password reset request', 500)
     );
   }
 };
@@ -221,7 +258,7 @@ exports.resetPassword = async (req, res, next) => {
 
     if (!user) {
       return res.status(400).json(
-        errorResponse('Password reset token is invalid or has expired', 400)
+        errorResponse('Invalid or expired reset token', 400)
       );
     }
 
@@ -245,55 +282,17 @@ exports.resetPassword = async (req, res, next) => {
 
     res.status(200).json({
       status: 'success',
-      message: 'Password has been reset',
+      message: 'Password has been reset successfully',
     });
   } catch (error) {
     console.error('Reset password error:', error);
     res.status(500).json(
-      errorResponse('Server error during password reset.', 500)
+      errorResponse('Server error during password reset', 500)
     );
   }
 };
 
-// @desc    Verify email
-// @route   POST /api/auth/verify-email
-// @access  Public
-exports.verifyEmail = async (req, res, next) => {
-  try {
-    const { token } = req.body;
-
-    // Find user by verification token
-    const user = await User.findOne({
-      verificationToken: token,
-      verificationTokenExpires: { $gt: Date.now() },
-    });
-
-    if (!user) {
-      return res.status(400).json(
-        errorResponse('Verification token is invalid or has expired', 400)
-      );
-    }
-
-    // Update user verification status
-    user.isVerified = true;
-    user.verificationToken = undefined;
-    user.verificationTokenExpires = undefined;
-
-    await user.save();
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Email verified successfully. You can now login.',
-    });
-  } catch (error) {
-    console.error('Email verification error:', error);
-    res.status(500).json(
-      errorResponse('Server error during email verification.', 500)
-    );
-  }
-};
-
-// @desc    Refresh token
+// @desc    Refresh authentication token
 // @route   POST /api/auth/refresh-token
 // @access  Public
 exports.refreshToken = async (req, res, next) => {
@@ -344,7 +343,40 @@ exports.refreshToken = async (req, res, next) => {
   } catch (error) {
     console.error('Refresh token error:', error);
     res.status(500).json(
-      errorResponse('Server error during token refresh.', 500)
+      errorResponse('Server error during token refresh', 500)
+    );
+  }
+};
+
+// @desc    Get current user profile
+// @route   GET /api/auth/me
+// @access  Private
+exports.getMe = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: {
+          id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+          profileImage: user.profileImage,
+          isVerified: user.isVerified,
+          phoneNumber: user.phoneNumber,
+          preferredLanguage: user.preferredLanguage,
+          notificationSettings: user.notificationSettings,
+          createdAt: user.createdAt,
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Get profile error:', error);
+    res.status(500).json(
+      errorResponse('Server error retrieving user profile', 500)
     );
   }
 };

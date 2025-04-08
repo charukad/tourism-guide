@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const errorResponse = require('../utils/errorResponse');
 
-// Validation middleware
+// Middleware to validate request data
 module.exports = (req, res, next) => {
   const errors = validationResult(req);
   
