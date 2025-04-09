@@ -216,7 +216,7 @@ const RegisterScreen = ({ navigation }) => {
                 loading={isLoading}
                 disabled={isLoading}
               >
-                Create Account
+                Create Account sdsdfs
               </Button>
             </View>
           )}
