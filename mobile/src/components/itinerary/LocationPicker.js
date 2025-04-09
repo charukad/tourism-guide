@@ -16,7 +16,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 
 // Import theme and utilities
-import { COLORS, FONTS } from '../../../constants/theme';
+import { COLORS, FONTS } from '../../constants/theme';
 import axios from 'axios';
 
 const { width, height } = Dimensions.get('window');

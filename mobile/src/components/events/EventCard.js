@@ -5,7 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { useNavigation } from '@react-navigation/native';
 
-import { COLORS, FONTS } from '../../../constants/theme';
+import { COLORS, FONTS } from '../../constants/theme';
 
 const EventCard = ({ event, compact = false }) => {
   const navigation = useNavigation();

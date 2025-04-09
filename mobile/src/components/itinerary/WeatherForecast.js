@@ -4,7 +4,7 @@ import { Card, ActivityIndicator, Divider, Button } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { format, addDays, isSameDay } from 'date-fns';
 
-import { COLORS, FONTS } from '../../../constants/theme';
+import { COLORS, FONTS } from '../../constants/theme';
 
 // Weather condition icons mapping
 const WEATHER_ICONS = {

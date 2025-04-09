@@ -3,7 +3,7 @@ import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Card, Text, Chip, IconButton, Button } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { COLORS, FONTS } from '../../../constants/theme';
+import { COLORS, FONTS } from '../../constants/theme';
 
 const CulturalInfoCard = ({ info, onPress }) => {
   const [expanded, setExpanded] = useState(false);

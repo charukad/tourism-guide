@@ -29,6 +29,7 @@
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+
       "package": "com.yourcompany.srilankaguide",
       "permissions": [
         "ACCESS_FINE_LOCATION",
@@ -46,6 +47,8 @@
     "web": {
       "favicon": "./assets/icons/favicon.png"
     },
+    "newArchEnabled": true,
+
     "plugins": [
       [
         "expo-location",
@@ -70,6 +73,8 @@
       "eas": {
         "projectId": "your-project-id-here"
       }
+      
     }
+    
   }
 }

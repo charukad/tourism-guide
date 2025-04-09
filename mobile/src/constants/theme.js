@@ -1,126 +1,75 @@
-import { DefaultTheme } from 'react-native-paper';
+// src/constants/theme.js
 
-export const colors = {
-  primary: '#1E88E5', // Blue
-  primaryDark: '#1565C0',
-  primaryLight: '#64B5F6',
-  accent: '#FF9800', // Orange
-  accentDark: '#F57C00',
-  accentLight: '#FFB74D',
+// Define colors with descriptive names
+export const COLORS = {
+  // Primary and accent colors
+  primary: '#2196F3',
+  secondary: '#FFC107',
+  accent: '#FF4081',
+  
+  // UI colors
   background: '#FFFFFF',
-  surface: '#FFFFFF',
-  error: '#B00020',
-  text: '#000000',
-  textLight: '#757575',
-  disabled: '#9E9E9E',
-  placeholder: '#BDBDBD',
-  backdrop: 'rgba(0, 0, 0, 0.5)',
-  divider: '#EEEEEE',
+  surface: '#F5F5F5',
+  error: '#F44336',
   success: '#4CAF50',
-  warning: '#FFC107',
-  info: '#2196F3',
+  warning: '#FF9800',
+  info: '#03A9F4',
+  
+  // Text colors
+  text: '#212121',
+  textLight: '#757575',
+  
+  // Utility colors
+  white: '#FFFFFF',
+  black: '#000000',
+  gray: '#9E9E9E',
+  lightGray: '#E0E0E0',
+  divider: '#EEEEEE',
 };
 
-export const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: colors.primary,
-    accent: colors.accent,
-    background: colors.background,
-    surface: colors.surface,
-    error: colors.error,
-    text: colors.text,
-    disabled: colors.disabled,
-    placeholder: colors.placeholder,
-    backdrop: colors.backdrop,
-  },
-  roundness: 8,
+// Define typography scale
+export const FONTS = {
+  h1: { fontSize: 24, fontWeight: 'bold' },
+  h2: { fontSize: 22, fontWeight: 'bold' },
+  h3: { fontSize: 18, fontWeight: 'bold' },
+  h4: { fontSize: 16, fontWeight: 'bold' },
+  body1: { fontSize: 16 },
+  body2: { fontSize: 15 },
+  body3: { fontSize: 14 },
+  body4: { fontSize: 12 },
+  body3Bold: { fontSize: 14, fontWeight: 'bold' },
+  body4Bold: { fontSize: 12, fontWeight: 'bold' },
 };
 
-export const typography = {
-  headline1: {
-    fontFamily: 'System',
-    fontSize: 28,
-    fontWeight: 'bold',
-    lineHeight: 34,
-  },
-  headline2: {
-    fontFamily: 'System',
-    fontSize: 24,
-    fontWeight: 'bold',
-    lineHeight: 30,
-  },
-  headline3: {
-    fontFamily: 'System',
-    fontSize: 20,
-    fontWeight: 'bold',
-    lineHeight: 26,
-  },
-  headline4: {
-    fontFamily: 'System',
-    fontSize: 18,
-    fontWeight: '600',
-    lineHeight: 24,
-  },
-  subtitle1: {
-    fontFamily: 'System',
-    fontSize: 16,
-    fontWeight: '600',
-    lineHeight: 22,
-  },
-  subtitle2: {
-    fontFamily: 'System',
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 20,
-  },
-  body1: {
-    fontFamily: 'System',
-    fontSize: 16,
-    fontWeight: 'normal',
-    lineHeight: 22,
-  },
-  body2: {
-    fontFamily: 'System',
-    fontSize: 14,
-    fontWeight: 'normal',
-    lineHeight: 20,
-  },
-  button: {
-    fontFamily: 'System',
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 20,
-    textTransform: 'uppercase',
-  },
-  caption: {
-    fontFamily: 'System',
-    fontSize: 12,
-    fontWeight: 'normal',
-    lineHeight: 16,
-  },
-  overline: {
-    fontFamily: 'System',
-    fontSize: 10,
-    fontWeight: 'normal',
-    lineHeight: 14,
-    textTransform: 'uppercase',
-  },
-};
-
-export const spacing = {
+// Define spacing scale for consistent layout
+export const SIZES = {
+  base: 8,
   xs: 4,
   sm: 8,
   md: 16,
   lg: 24,
   xl: 32,
-  xxl: 48,
+  xxl: 40,
+  padding: 16,
+  radius: 8,
 };
 
-export default {
-  colors,
-  theme,
-  typography,
-  spacing,
+// Define spacing using the SIZES scale
+export const spacing = {
+  xs: SIZES.xs,
+  sm: SIZES.sm,
+  md: SIZES.md,
+  lg: SIZES.lg,
+  xl: SIZES.xl,
 };
+
+// Export the theme object as default
+const theme = {
+  COLORS,
+  FONTS,
+  SIZES,
+  spacing,
+  colors: COLORS, // Alternative accessor for consistency with React Native Paper
+};
+
+export default theme;

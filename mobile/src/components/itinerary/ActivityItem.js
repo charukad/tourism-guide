@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 
-import { COLORS, FONTS } from '../../../constants/theme';
+import { COLORS, FONTS } from '../../constants/theme';
 
 // Activity type definitions
 const ACTIVITY_TYPES = {
