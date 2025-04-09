@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
 // Import theme constants
-import { colors, spacing } from '../../constants/theme';
+import { colors, spacing } from '../../utils/themeUtils';
 
 /**
  * Reusable header component for the app

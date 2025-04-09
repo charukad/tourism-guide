@@ -1,3 +1,5 @@
+// src/screens/auth/RegisterScreen.js
+
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import { Text, TextInput, Button, RadioButton, Snackbar } from 'react-native-paper';
@@ -5,7 +7,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { register, clearAuthError, clearAuthMessage } from '../../store/slices/authSlice';
-import { colors, spacing } from '../../constants/theme';
+
+// Change this import to use the new utility file
+import { colors, spacing } from '../../utils/themeUtils';
 
 // Validation schema
 const RegisterSchema = Yup.object().shape({
@@ -212,7 +216,7 @@ const RegisterScreen = ({ navigation }) => {
                 loading={isLoading}
                 disabled={isLoading}
               >
-                Create Account
+                Create Account sdsdfs
               </Button>
             </View>
           )}
@@ -252,7 +256,7 @@ const RegisterScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background,  // This was causing the error
   },
   scrollContainer: {
     flexGrow: 1,

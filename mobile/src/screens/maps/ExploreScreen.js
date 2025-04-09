@@ -6,7 +6,7 @@ import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchLocations, fetchNearbyLocations, fetchLocationCategories } from '../../store/slices/locationsSlice';
-import { colors, spacing } from '../../constants/theme';
+import { colors, spacing } from '../../utils/themeUtils';
 import LocationMarker from '../../components/maps/LocationMarker';
 import BottomSheet from '../../components/maps/BottomSheet';
 

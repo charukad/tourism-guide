@@ -22,11 +22,12 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
-import Carousel from 'react-native-snap-carousel';
 
-// Fix the import path to make sure it's correct for your project structure
-// The '../..' path might be wrong - adjust according to your actual folder structure
-import theme, { COLORS, FONTS } from '../../constants/theme';
+// Fix: Use require with fallback for Carousel import
+const Carousel = require('react-native-snap-carousel').default || require('react-native-snap-carousel');
+
+// Import from the utility file instead of directly from theme
+import { colors, COLORS, FONTS } from '../../utils/themeUtils';
 
 // Import actions
 import { fetchItineraryItemById, deleteItineraryItem } from '../../store/slices/itinerariesSlice';
@@ -35,7 +36,7 @@ import { fetchItineraryItemById, deleteItineraryItem } from '../../store/slices/
 const ACTIVITY_TYPES = {
   visit: {
     icon: 'map-marker',
-    color: COLORS?.primary || '#2196F3',
+    color: colors.primary,
     label: 'Visit'
   },
   food: {
@@ -166,7 +167,7 @@ const ActivityDetailScreen = ({ navigation, route }) => {
   if (loading || !currentItineraryItem) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS?.primary || '#2196F3'} />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text style={{ marginTop: 16 }}>Loading activity details...</Text>
       </View>
     );
@@ -254,6 +255,7 @@ const ActivityDetailScreen = ({ navigation, route }) => {
               autoplay={false}
               inactiveSlideOpacity={1}
               inactiveSlideScale={1}
+              useScrollView={true} // Adding this for better compatibility
             />
             
             {activity.photos.length > 1 && (
@@ -350,7 +352,7 @@ const ActivityDetailScreen = ({ navigation, route }) => {
             <View style={styles.costContainer}>
               <Text style={styles.sectionTitle}>Cost</Text>
               <View style={styles.costContent}>
-                <MaterialCommunityIcons name="currency-usd" size={24} color={COLORS?.primary || '#2196F3'} />
+                <MaterialCommunityIcons name="currency-usd" size={24} color={colors.primary} />
                 <Text style={styles.costText}>
                   {activity.cost} {activity?.currency || 'USD'}
                 </Text>
@@ -379,7 +381,7 @@ const ActivityDetailScreen = ({ navigation, route }) => {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setDeleteDialogVisible(false)}>Cancel</Button>
-            <Button onPress={confirmDelete} color={COLORS?.error || '#F44336'}>Delete</Button>
+            <Button onPress={confirmDelete} color={colors.error}>Delete</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -387,11 +389,11 @@ const ActivityDetailScreen = ({ navigation, route }) => {
   );
 };
 
-// Define styles with fallback values
+// Define styles with correctly imported colors
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS?.background || '#FFFFFF',
+    backgroundColor: colors.background,
   },
   errorContainer: {
     flex: 1,
@@ -403,7 +405,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: COLORS?.error || '#F44336',
+    color: colors.error,
   },
   errorText: {
     fontSize: 16,
@@ -456,7 +458,7 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS?.primary || '#2196F3',
+    backgroundColor: colors.primary,
   },
   contentContainer: {
     padding: 16,
@@ -471,7 +473,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    backgroundColor: COLORS?.primary || '#2196F3',
+    backgroundColor: colors.primary,
   },
   typeBadgeText: {
     color: '#FFFFFF',
@@ -537,7 +539,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS?.primary || '#2196F3',
+    backgroundColor: colors.primary,
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 4,
@@ -558,7 +560,7 @@ const styles = StyleSheet.create({
   costText: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: COLORS?.primary || '#2196F3',
+    color: colors.primary,
     marginLeft: 8,
   },
   notesContainer: {

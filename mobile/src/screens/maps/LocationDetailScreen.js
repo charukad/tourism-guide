@@ -15,7 +15,7 @@ import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-ico
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import ImageView from 'react-native-image-viewing';
 import { fetchLocationById, fetchNearbyLocations } from '../../store/slices/locationsSlice';
-import { colors, spacing } from '../../constants/theme';
+import { colors, spacing } from '../../utils/themeUtils';
 import LocationMarker from '../../components/maps/LocationMarker';
 
 const { width } = Dimensions.get('window');

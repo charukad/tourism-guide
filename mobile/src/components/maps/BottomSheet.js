@@ -2,7 +2,9 @@ import React from 'react';
 import { View, StyleSheet, Animated, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { Text, Button, IconButton } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing } from '../../constants/theme';
+
+// Change this import to use the new utility file
+import { colors, spacing } from '../../utils/themeUtils';
 
 const { width } = Dimensions.get('window');
 const MAX_HEIGHT = 250;
