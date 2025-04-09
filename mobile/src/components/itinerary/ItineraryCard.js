@@ -6,7 +6,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 // Import theme constants
-import { COLORS, SIZES, FONTS } from '../../../constants/theme';
+import { COLORS, SIZES, FONTS } from '../../constants/theme';
 
 const ItineraryCard = ({ itinerary, onEdit, onShare, onDelete }) => {
   const navigation = useNavigation();
@@ -124,12 +124,13 @@ const styles = StyleSheet.create({
   },
   title: {
     ...FONTS.h2,
-    color: COLORS.white,
+    
     marginBottom: 4,
   },
   dateRange: {
-    ...FONTS.body4,
-    color: COLORS.white,
+    ...FONTS.body4
+    //color: colors.white
+,
     marginBottom: 8,
   },
   statsContainer: {
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
   },
   statText: {
     ...FONTS.body4,
-    color: COLORS.white,
+    //color: COLORS.white,
     marginLeft: 4,
   },
   cardActions: {

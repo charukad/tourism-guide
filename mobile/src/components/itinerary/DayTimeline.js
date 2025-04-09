@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native
 import { Card, IconButton, Divider } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { COLORS, FONTS, SIZES } from '../../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
 
 // Activity type icons and colors
 const ACTIVITY_TYPES = {

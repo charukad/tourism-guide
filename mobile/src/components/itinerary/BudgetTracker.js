@@ -4,7 +4,7 @@ import { ProgressBar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 
-import { COLORS, FONTS } from '../../../constants/theme';
+import { COLORS, FONTS } from '../../constants/theme';
 
 // Activity type definitions and colors (consistent with other files)
 const ACTIVITY_TYPES = {

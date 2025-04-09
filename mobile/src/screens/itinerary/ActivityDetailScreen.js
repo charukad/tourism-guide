@@ -7,6 +7,8 @@ import {
   Dimensions,
   Linking,
   TouchableOpacity,
+  Platform,
+  SafeAreaView,
 } from 'react-native';
 import {
   Appbar,
@@ -22,15 +24,18 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import Carousel from 'react-native-snap-carousel';
 
-// Import components and utilities
-import { COLORS, FONTS } from '../../constants/theme';
+// Fix the import path to make sure it's correct for your project structure
+// The '../..' path might be wrong - adjust according to your actual folder structure
+import theme, { COLORS, FONTS } from '../../constants/theme';
+
+// Import actions
 import { fetchItineraryItemById, deleteItineraryItem } from '../../store/slices/itinerariesSlice';
 
 // Activity type definitions
 const ACTIVITY_TYPES = {
   visit: {
     icon: 'map-marker',
-    color: COLORS.primary,
+    color: COLORS?.primary || '#2196F3',
     label: 'Visit'
   },
   food: {
@@ -60,29 +65,32 @@ const ACTIVITY_TYPES = {
   }
 };
 
-// Format time (e.g., "09:30 AM")
+const screenWidth = Dimensions.get('window').width;
+
+// Format time function
 const formatTime = (timeString) => {
   if (!timeString) return 'All day';
   
   try {
     const [hours, minutes] = timeString.split(':');
     const date = new Date();
-    date.setHours(parseInt(hours, 10));
-    date.setMinutes(parseInt(minutes, 10));
+    date.setHours(parseInt(hours, 10) || 0);
+    date.setMinutes(parseInt(minutes, 10) || 0);
     
     return format(date, 'h:mm a');
   } catch (error) {
+    console.warn('Error formatting time:', error);
     return timeString;
   }
 };
 
-// Calculate duration in hours and minutes
+// Calculate duration function
 const calculateDuration = (startTime, endTime) => {
   if (!startTime || !endTime) return '';
   
   try {
-    const [startHours, startMinutes] = startTime.split(':').map(num => parseInt(num, 10));
-    const [endHours, endMinutes] = endTime.split(':').map(num => parseInt(num, 10));
+    const [startHours, startMinutes] = startTime.split(':').map(num => parseInt(num, 10) || 0);
+    const [endHours, endMinutes] = endTime.split(':').map(num => parseInt(num, 10) || 0);
     
     let durationMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes);
     if (durationMinutes < 0) durationMinutes += 24 * 60; // Handle overnight activities
@@ -98,68 +106,122 @@ const calculateDuration = (startTime, endTime) => {
       return `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minutes`;
     }
   } catch (error) {
+    console.warn('Error calculating duration:', error);
     return '';
   }
 };
 
-const screenWidth = Dimensions.get('window').width;
-
 const ActivityDetailScreen = ({ navigation, route }) => {
-  const dispatch = useDispatch();
-  const { itineraryId, activityId } = route.params;
+  // Extract params safely
+  const params = route?.params || {};
+  const { itineraryId, activityId } = params;
   
-  const { currentItineraryItem, loading } = useSelector(state => state.itineraries);
+  const dispatch = useDispatch();
+  
+  // Use safe selector with fallback for state
+  const itinerariesState = useSelector(state => state?.itineraries) || {};
+  const { currentItineraryItem, loading } = itinerariesState;
   
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
   const [carouselActiveIndex, setCarouselActiveIndex] = useState(0);
+  const [error, setError] = useState(null);
   
-  // Fetch activity details when screen loads
+  // Fetch activity details safely
   useEffect(() => {
-    dispatch(fetchItineraryItemById({ itineraryId, itemId: activityId }));
+    if (!itineraryId || !activityId) {
+      setError('Missing required information');
+      return;
+    }
+    
+    try {
+      dispatch(fetchItineraryItemById({ itineraryId, itemId: activityId }))
+        .catch(err => {
+          console.error('Error fetching activity:', err);
+          setError('Failed to load activity details');
+        });
+    } catch (err) {
+      console.error('Error in dispatch:', err);
+      setError('An unexpected error occurred');
+    }
   }, [dispatch, itineraryId, activityId]);
   
-  if (!currentItineraryItem || loading) {
+  // Show error state
+  if (error) {
+    return (
+      <SafeAreaView style={styles.errorContainer}>
+        <Text style={styles.errorTitle}>Error</Text>
+        <Text style={styles.errorText}>{error}</Text>
+        <Button 
+          mode="contained" 
+          onPress={() => navigation.goBack()}
+          style={{ marginTop: 20 }}
+        >
+          Go Back
+        </Button>
+      </SafeAreaView>
+    );
+  }
+  
+  // Show loading state
+  if (loading || !currentItineraryItem) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <ActivityIndicator size="large" color={COLORS?.primary || '#2196F3'} />
+        <Text style={{ marginTop: 16 }}>Loading activity details...</Text>
       </View>
     );
   }
   
-  const activity = currentItineraryItem;
-  const activityType = ACTIVITY_TYPES[activity.type] || ACTIVITY_TYPES.other;
-  const duration = calculateDuration(activity.startTime, activity.endTime);
+  // Get activity data safely
+  const activity = currentItineraryItem || {};
+  const activityType = ACTIVITY_TYPES[activity?.type] || ACTIVITY_TYPES.other;
+  const duration = calculateDuration(activity?.startTime, activity?.endTime);
   
-  // Handle opening maps for directions
+  // Safe handling for directions
   const handleGetDirections = () => {
-    if (activity.location && activity.location.coordinates) {
+    if (!activity?.location?.coordinates) return;
+    
+    try {
       const { latitude, longitude } = activity.location.coordinates;
-      const url = Platform.OS === 'ios'
-        ? `maps:0,0?q=${activity.location.name}@${latitude},${longitude}`
-        : `geo:0,0?q=${latitude},${longitude}(${activity.location.name})`;
+      const locationName = encodeURIComponent(activity.location.name || 'Location');
       
-      Linking.openURL(url).catch(err => 
-        console.error('An error occurred while opening maps:', err)
-      );
+      const url = Platform.OS === 'ios'
+        ? `maps:0,0?q=${locationName}@${latitude},${longitude}`
+        : `geo:0,0?q=${latitude},${longitude}(${locationName})`;
+      
+      Linking.openURL(url).catch(err => console.error('Error opening maps:', err));
+    } catch (err) {
+      console.error('Error preparing maps URL:', err);
     }
   };
   
-  // Handle delete activity
+  // Delete handling
   const handleDeleteActivity = () => {
     setDeleteDialogVisible(true);
   };
   
   const confirmDelete = () => {
-    dispatch(deleteItineraryItem({ itineraryId, itemId: activityId }))
-      .unwrap()
-      .then(() => {
-        setDeleteDialogVisible(false);
-        navigation.goBack();
-      });
+    try {
+      dispatch(deleteItineraryItem({ itineraryId, itemId: activityId }))
+        .unwrap()
+        .then(() => {
+          setDeleteDialogVisible(false);
+          navigation.goBack();
+        })
+        .catch(err => {
+          console.error('Error deleting activity:', err);
+          setDeleteDialogVisible(false);
+        });
+    } catch (err) {
+      console.error('Error in delete dispatch:', err);
+      setDeleteDialogVisible(false);
+    }
   };
   
-  // Render photo carousel
+  // Render carousel item safely
   const renderCarouselItem = ({ item }) => {
+    if (!item) return null;
+    
     return (
       <Image
         source={{ uri: item }}
@@ -171,32 +233,24 @@ const ActivityDetailScreen = ({ navigation, route }) => {
   
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} color={COLORS.white} />
-        <Appbar.Content title="" color={COLORS.white} />
-        <Appbar.Action 
-          icon="pencil" 
-          color={COLORS.white} 
-          onPress={() => navigation.navigate('EditActivity', { itineraryId, activityId })} 
-        />
-        <Appbar.Action 
-          icon="delete" 
-          color={COLORS.white} 
-          onPress={handleDeleteActivity} 
-        />
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="" />
+        <Appbar.Action icon="pencil" onPress={() => navigation.navigate('EditActivity', { itineraryId, activityId })} />
+        <Appbar.Action icon="delete" onPress={handleDeleteActivity} />
       </Appbar.Header>
       
       <ScrollView style={styles.scrollView}>
         {/* Photos Carousel */}
-        {activity.photos && activity.photos.length > 0 ? (
+        {activity?.photos && activity.photos.length > 0 ? (
           <View style={styles.carouselContainer}>
             <Carousel
               data={activity.photos}
               renderItem={renderCarouselItem}
               sliderWidth={screenWidth}
               itemWidth={screenWidth}
-              onSnapToItem={(index) => setCarouselActiveIndex(index)}
-              loop={true}
+              onSnapToItem={setCarouselActiveIndex}
+              loop={activity.photos.length > 1}
               autoplay={false}
               inactiveSlideOpacity={1}
               inactiveSlideScale={1}
@@ -206,7 +260,7 @@ const ActivityDetailScreen = ({ navigation, route }) => {
               <View style={styles.paginationContainer}>
                 {activity.photos.map((_, index) => (
                   <View
-                    key={index}
+                    key={index.toString()}
                     style={[
                       styles.paginationDot,
                       index === carouselActiveIndex && styles.paginationDotActive
@@ -218,29 +272,29 @@ const ActivityDetailScreen = ({ navigation, route }) => {
           </View>
         ) : (
           <View style={styles.defaultImageContainer}>
-            <View style={[styles.activityIconCircle, { backgroundColor: activityType.color }]}>
-              <MaterialCommunityIcons name={activityType.icon} size={48} color={COLORS.white} />
+            <View style={[styles.activityIconCircle, { backgroundColor: activityType?.color }]}>
+              <MaterialCommunityIcons name={activityType?.icon || 'dots-horizontal'} size={48} color="#FFFFFF" />
             </View>
           </View>
         )}
         
         {/* Activity Content */}
         <View style={styles.contentContainer}>
-          {/* Activity Type Badge */}
+          {/* Type Badge */}
           <View style={styles.typeBadgeContainer}>
-            <View style={[styles.typeBadge, { backgroundColor: activityType.color }]}>
-              <MaterialCommunityIcons name={activityType.icon} size={16} color={COLORS.white} />
-              <Text style={styles.typeBadgeText}>{activityType.label}</Text>
+            <View style={[styles.typeBadge, { backgroundColor: activityType?.color }]}>
+              <MaterialCommunityIcons name={activityType?.icon || 'dots-horizontal'} size={16} color="#FFFFFF" />
+              <Text style={styles.typeBadgeText}>{activityType?.label || 'Activity'}</Text>
             </View>
           </View>
           
           {/* Title and Time */}
-          <Text style={styles.title}>{activity.title}</Text>
+          <Text style={styles.title}>{activity?.title || 'Untitled Activity'}</Text>
           
           <View style={styles.timeContainer}>
-            <MaterialCommunityIcons name="clock-outline" size={18} color={COLORS.gray} />
+            <MaterialCommunityIcons name="clock-outline" size={18} color="#757575" />
             <Text style={styles.timeText}>
-              {formatTime(activity.startTime)} - {formatTime(activity.endTime)}
+              {formatTime(activity?.startTime)} - {formatTime(activity?.endTime)}
             </Text>
             {duration && (
               <Text style={styles.durationText}>({duration})</Text>
@@ -248,65 +302,71 @@ const ActivityDetailScreen = ({ navigation, route }) => {
           </View>
           
           {/* Date */}
-          <View style={styles.dateContainer}>
-            <MaterialCommunityIcons name="calendar" size={18} color={COLORS.gray} />
-            <Text style={styles.dateText}>
-              {format(new Date(activity.date), 'EEEE, MMMM d, yyyy')}
-            </Text>
-          </View>
+          {activity?.date && (
+            <View style={styles.dateContainer}>
+              <MaterialCommunityIcons name="calendar" size={18} color="#757575" />
+              <Text style={styles.dateText}>
+                {format(new Date(activity.date), 'EEEE, MMMM d, yyyy')}
+              </Text>
+            </View>
+          )}
           
           <Divider style={styles.divider} />
           
           {/* Description */}
-          {activity.description ? (
+          {activity?.description && (
             <View style={styles.descriptionContainer}>
               <Text style={styles.sectionTitle}>Description</Text>
               <Text style={styles.description}>{activity.description}</Text>
             </View>
-          ) : null}
+          )}
           
           {/* Location */}
-          {activity.location ? (
+          {activity?.location && (
             <View style={styles.locationContainer}>
               <Text style={styles.sectionTitle}>Location</Text>
               
               <View style={styles.locationCard}>
-                <Text style={styles.locationName}>{activity.location.name}</Text>
-                <Text style={styles.locationAddress}>{activity.location.address}</Text>
+                <Text style={styles.locationName}>{activity.location.name || 'Unknown Location'}</Text>
+                {activity.location.address && (
+                  <Text style={styles.locationAddress}>{activity.location.address}</Text>
+                )}
                 
-                <TouchableOpacity
-                  style={styles.directionsButton}
-                  onPress={handleGetDirections}
-                >
-                  <MaterialCommunityIcons name="directions" size={18} color={COLORS.white} />
-                  <Text style={styles.directionsText}>Get Directions</Text>
-                </TouchableOpacity>
+                {activity.location.coordinates && (
+                  <TouchableOpacity
+                    style={styles.directionsButton}
+                    onPress={handleGetDirections}
+                  >
+                    <MaterialCommunityIcons name="directions" size={18} color="#FFFFFF" />
+                    <Text style={styles.directionsText}>Get Directions</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
-          ) : null}
+          )}
           
           {/* Cost */}
-          {activity.cost > 0 ? (
+          {(activity?.cost > 0 || activity?.cost === 0) && (
             <View style={styles.costContainer}>
               <Text style={styles.sectionTitle}>Cost</Text>
               <View style={styles.costContent}>
-                <MaterialCommunityIcons name="currency-usd" size={24} color={COLORS.primary} />
+                <MaterialCommunityIcons name="currency-usd" size={24} color={COLORS?.primary || '#2196F3'} />
                 <Text style={styles.costText}>
-                  {activity.cost} {activity.currency || 'USD'}
+                  {activity.cost} {activity?.currency || 'USD'}
                 </Text>
               </View>
             </View>
-          ) : null}
+          )}
           
           {/* Notes */}
-          {activity.notes ? (
+          {activity?.notes && (
             <View style={styles.notesContainer}>
               <Text style={styles.sectionTitle}>Notes</Text>
               <View style={styles.notesCard}>
                 <Text style={styles.notes}>{activity.notes}</Text>
               </View>
             </View>
-          ) : null}
+          )}
         </View>
       </ScrollView>
       
@@ -315,11 +375,11 @@ const ActivityDetailScreen = ({ navigation, route }) => {
         <Dialog visible={deleteDialogVisible} onDismiss={() => setDeleteDialogVisible(false)}>
           <Dialog.Title>Delete Activity</Dialog.Title>
           <Dialog.Content>
-            <Text>Are you sure you want to delete "{activity.title}"? This action cannot be undone.</Text>
+            <Text>Are you sure you want to delete "{activity?.title || 'this activity'}"? This action cannot be undone.</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setDeleteDialogVisible(false)}>Cancel</Button>
-            <Button onPress={confirmDelete} color={COLORS.error}>Delete</Button>
+            <Button onPress={confirmDelete} color={COLORS?.error || '#F44336'}>Delete</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -327,31 +387,39 @@ const ActivityDetailScreen = ({ navigation, route }) => {
   );
 };
 
+// Define styles with fallback values
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS?.background || '#FFFFFF',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: COLORS?.error || '#F44336',
+  },
+  errorText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  appbar: {
-    backgroundColor: 'transparent',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1,
-    elevation: 0,
-  },
   scrollView: {
     flex: 1,
   },
   carouselContainer: {
     height: 250,
-    backgroundColor: COLORS.lightGray,
   },
   carouselImage: {
     width: screenWidth,
@@ -374,11 +442,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   paginationDotActive: {
-    backgroundColor: COLORS.white,
+    backgroundColor: '#FFFFFF',
   },
   defaultImageContainer: {
     height: 200,
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: '#F5F5F5',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -388,6 +456,7 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: COLORS?.primary || '#2196F3',
   },
   contentContainer: {
     padding: 16,
@@ -402,15 +471,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
+    backgroundColor: COLORS?.primary || '#2196F3',
   },
   typeBadgeText: {
-    ...FONTS.body4,
-    color: COLORS.white,
+    color: '#FFFFFF',
     marginLeft: 4,
     fontWeight: 'bold',
   },
   title: {
-    ...FONTS.h1,
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 12,
   },
   timeContainer: {
@@ -419,12 +489,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   timeText: {
-    ...FONTS.body3,
     marginLeft: 8,
   },
   durationText: {
-    ...FONTS.body3,
-    color: COLORS.gray,
+    color: '#757575',
     marginLeft: 4,
   },
   dateContainer: {
@@ -433,7 +501,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   dateText: {
-    ...FONTS.body3,
     marginLeft: 8,
   },
   divider: {
@@ -443,11 +510,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    ...FONTS.h3,
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 8,
   },
   description: {
-    ...FONTS.body3,
     lineHeight: 24,
   },
   locationContainer: {
@@ -455,23 +522,22 @@ const styles = StyleSheet.create({
   },
   locationCard: {
     padding: 16,
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: '#F5F5F5',
     borderRadius: 8,
   },
   locationName: {
-    ...FONTS.h4,
+    fontWeight: 'bold',
     marginBottom: 4,
   },
   locationAddress: {
-    ...FONTS.body3,
-    color: COLORS.gray,
+    color: '#757575',
     marginBottom: 12,
   },
   directionsButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS?.primary || '#2196F3',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 4,
@@ -479,8 +545,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   directionsText: {
-    ...FONTS.body4,
-    color: COLORS.white,
+    color: '#FFFFFF',
     marginLeft: 8,
   },
   costContainer: {
@@ -491,8 +556,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   costText: {
-    ...FONTS.h2,
-    color: COLORS.primary,
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: COLORS?.primary || '#2196F3',
     marginLeft: 8,
   },
   notesContainer: {
@@ -500,11 +566,10 @@ const styles = StyleSheet.create({
   },
   notesCard: {
     padding: 16,
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: '#F5F5F5',
     borderRadius: 8,
   },
   notes: {
-    ...FONTS.body3,
     lineHeight: 24,
   },
 });
