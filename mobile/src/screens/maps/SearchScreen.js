@@ -4,7 +4,7 @@ import { Text, Searchbar, Chip, ActivityIndicator, Button } from 'react-native-p
 import { useDispatch, useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { searchLocations, clearSearchResults, setCurrentPage } from '../../store/slices/locationsSlice';
-import { colors, spacing } from '../../constants/theme';
+import { colors, spacing } from '../../utils/themeUtils';
 import LocationMarker from '../../components/maps/LocationMarker';
 
 const SearchScreen = ({ route, navigation }) => {

@@ -1,3 +1,5 @@
+// src/screens/auth/LoginScreen.js
+
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Image, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Text, TextInput, Button, Snackbar } from 'react-native-paper';
@@ -5,7 +7,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { login, clearAuthError } from '../../store/slices/authSlice';
-import { colors, spacing } from '../../constants/theme';
+
+// Change this import to use the new utility file
+import { colors, spacing } from '../../utils/themeUtils';
 
 // Validation schema
 const LoginSchema = Yup.object().shape({
@@ -107,7 +111,7 @@ const LoginScreen = ({ navigation }) => {
                   loading={isLoading}
                   disabled={isLoading}
                 >
-                  Sign In 1
+                  Sign In
                 </Button>
               </View>
             )}
@@ -137,7 +141,7 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background,  // This was causing the error
   },
   scrollContainer: {
     flexGrow: 1,

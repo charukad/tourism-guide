@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
-import { colors } from '../../constants/theme';
+
+// Change this import to use the new utility file
+import { colors } from '../../utils/themeUtils';
 
 const LocationMarker = ({ type, size = 'medium' }) => {
   // Size variables
