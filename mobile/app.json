@@ -10,7 +10,6 @@
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
-
     },
     "assets": [
       "./assets/fonts/Roboto-Regular.ttf",
@@ -22,25 +21,31 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.srilankaguide"
+      "bundleIdentifier": "com.dasunc.srilankaguide",
+      "config": {
+        "googleMapsApiKey": "AIzaSyAHKdYSZMAX_vSdbEUGsBUl-ZTAJHCS-6s"
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-
-      "package": "com.yourcompany.srilankaguide",
+      "package": "com.dasunc.srilankaguide",
       "permissions": [
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
       ],
       "config": {
         "googleMaps": {
-          "apiKey": "YOUR_API_KEY_HERE"
+          "apiKey": "AIzaSyAHKdYSZMAX_vSdbEUGsBUl-ZTAJHCS-6s"
         }
       }
     },
@@ -48,7 +53,6 @@
       "favicon": "./assets/icons/favicon.png"
     },
     "newArchEnabled": true,
-
     "plugins": [
       [
         "expo-location",
@@ -69,12 +73,11 @@
         }
       ]
     ],
+    "owner": "dasunc",
     "extra": {
       "eas": {
-        "projectId": "your-project-id-here"
+        "projectId": "f7c2824f-db46-467d-9490-54496534e229"
       }
-      
     }
-    
   }
 }

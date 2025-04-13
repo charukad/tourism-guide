@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, FlatList, StyleSheet, Text, RefreshControl, ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FAB, Searchbar, Chip, Portal, Dialog, Button } from 'react-native-paper';
@@ -24,23 +24,13 @@ const ItinerariesScreen = ({ navigation }) => {
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
   const [itineraryToDelete, setItineraryToDelete] = useState(null);
   
-  // Fetch itineraries when screen is focused
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(fetchItineraries());
-    }, [dispatch])
-  );
-  
-  // Handle pull-to-refresh
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    dispatch(fetchItineraries()).then(() => {
-      setRefreshing(false);
-    });
-  }, [dispatch]);
-  
   // Filter itineraries based on search query and active filter
-  const getFilteredItineraries = () => {
+  const getFilteredItineraries = useCallback(() => {
+    // Ensure itineraries is an array
+    if (!Array.isArray(itineraries)) {
+      return [];
+    }
+    
     let filtered = [...itineraries];
     
     // Apply search filter
@@ -72,7 +62,25 @@ const ItinerariesScreen = ({ navigation }) => {
     }
     
     return filtered;
-  };
+  }, [itineraries, searchQuery, activeFilter]);
+  
+  // Compute filtered itineraries using useMemo
+  const filteredItineraries = useMemo(() => getFilteredItineraries(), [getFilteredItineraries]);
+  
+  // Fetch itineraries when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(fetchItineraries());
+    }, [dispatch])
+  );
+  
+  // Handle pull-to-refresh
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    dispatch(fetchItineraries()).then(() => {
+      setRefreshing(false);
+    });
+  }, [dispatch]);
   
   // Handle itinerary actions
   const handleEdit = (itineraryId) => {
@@ -96,8 +104,6 @@ const ItinerariesScreen = ({ navigation }) => {
       setItineraryToDelete(null);
     }
   };
-  
-  const filteredItineraries = getFilteredItineraries();
   
   return (
     <SafeAreaView style={styles.container}>

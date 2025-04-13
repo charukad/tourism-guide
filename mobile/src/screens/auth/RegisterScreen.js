@@ -244,7 +244,7 @@ const RegisterScreen = ({ navigation }) => {
       <Snackbar
         visible={successSnackbarVisible}
         onDismiss={dismissSuccessSnackbar}
-        duration={5000}
+        duration={5008}
         style={styles.successSnackbar}
       >
         {message}

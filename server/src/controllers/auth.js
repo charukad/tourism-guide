@@ -119,12 +119,16 @@ exports.login = async (req, res, next) => {
       );
     }
 
-    // Check if email is verified (can be commented out during development)
+    // DEVELOPMENT MODIFICATION: Email verification check commented out
+    // In production, uncomment this block to enforce email verification
+    /*
+    // Check if email is verified
     if (!user.isVerified) {
       return res.status(401).json(
         errorResponse('Please verify your email before logging in', 401)
       );
     }
+    */
 
     // Generate tokens
     const token = generateToken(user._id);

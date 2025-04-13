@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity, Animated, Platform } from 'react-native';
-import { Text, Searchbar, Chip, FAB, ActivityIndicator } from 'react-native-paper';
+import { View, StyleSheet, Dimensions, TouchableOpacity, Animated, Platform, ScrollView, Text } from 'react-native';
+import { Text as PaperText, Searchbar, Chip, FAB, ActivityIndicator } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -9,6 +9,7 @@ import { fetchLocations, fetchNearbyLocations, fetchLocationCategories } from '.
 import { colors, spacing } from '../../utils/themeUtils';
 import LocationMarker from '../../components/maps/LocationMarker';
 import BottomSheet from '../../components/maps/BottomSheet';
+import FallbackMap from '../../components/maps/FallbackMap';
 
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
@@ -33,6 +34,7 @@ const ExploreScreen = ({ navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [mapError, setMapError] = useState(false);
   const mapRef = useRef(null);
   const bottomSheetHeight = useRef(new Animated.Value(0)).current;
 
@@ -142,38 +144,52 @@ const ExploreScreen = ({ navigation }) => {
     }
   };
 
+  // Handle map error
+  const handleMapError = (error) => {
+    console.error('Map error:', error);
+    setMapError(true);
+  };
+
   return (
     <View style={styles.container}>
       {/* Map View */}
-      <MapView
-        ref={mapRef}
-        style={styles.map}
-        provider={PROVIDER_GOOGLE}
-        initialRegion={initialRegion}
-        showsUserLocation={locationPermission}
-        showsMyLocationButton={false}
-        showsCompass={true}
-        onRegionChangeComplete={setRegion}
-      >
-        {locations.map((location) => (
-          <Marker
-            key={location._id}
-            coordinate={{
-              latitude: location.location.coordinates[1],
-              longitude: location.location.coordinates[0],
-            }}
-            onPress={() => handleMarkerPress(location)}
-          >
-            <LocationMarker type={location.type} />
-            <Callout tooltip>
-              <View style={styles.callout}>
-                <Text style={styles.calloutTitle}>{location.name}</Text>
-                <Text style={styles.calloutSubtitle}>{location.address.city}</Text>
-              </View>
-            </Callout>
-          </Marker>
-        ))}
-      </MapView>
+      {!mapError ? (
+        <MapView
+          ref={mapRef}
+          style={styles.map}
+          provider={Platform.OS === 'ios' ? undefined : PROVIDER_GOOGLE}
+          initialRegion={initialRegion}
+          showsUserLocation={locationPermission}
+          showsMyLocationButton={false}
+          showsCompass={true}
+          onRegionChangeComplete={setRegion}
+          loadingEnabled={true}
+          loadingIndicatorColor={colors.primary}
+          loadingBackgroundColor={colors.background}
+          onError={handleMapError}
+        >
+          {locations.map((location) => (
+            <Marker
+              key={location._id}
+              coordinate={{
+                latitude: location.location.coordinates[1],
+                longitude: location.location.coordinates[0],
+              }}
+              onPress={() => handleMarkerPress(location)}
+            >
+              <LocationMarker type={location.type} />
+              <Callout tooltip>
+                <View style={styles.callout}>
+                  <PaperText style={styles.calloutTitle}>{location.name}</PaperText>
+                  <PaperText style={styles.calloutSubtitle}>{location.address.city}</PaperText>
+                </View>
+              </Callout>
+            </Marker>
+          ))}
+        </MapView>
+      ) : (
+        <FallbackMap onRetry={() => setMapError(false)} />
+      )}
 
       {/* Search Bar */}
       <View style={styles.searchBarContainer}>
@@ -320,6 +336,36 @@ const styles = StyleSheet.create({
   calloutSubtitle: {
     fontSize: 12,
     color: colors.textLight,
+  },
+  mapErrorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    padding: spacing.lg,
+  },
+  mapErrorText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: spacing.md,
+    color: colors.text,
+  },
+  mapErrorSubtext: {
+    fontSize: 14,
+    marginTop: spacing.xs,
+    color: colors.textLight,
+    textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: spacing.lg,
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: colors.white,
+    fontWeight: 'bold',
   },
 });
 

@@ -124,7 +124,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
       <Snackbar
         visible={successSnackbarVisible}
         onDismiss={dismissSuccessSnackbar}
-        duration={5000}
+        duration={8}
         style={styles.successSnackbar}
       >
         {message}

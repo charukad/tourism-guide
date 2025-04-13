@@ -5,12 +5,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 // Import navigators
 import AuthNavigator from './AuthNavigator';
 import MainTabNavigator from './MainTabNavigator';
+import GuideDashboardNavigator from './GuideDashboardNavigator';
 
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
   // Check if user is authenticated using Redux
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   return (
     <Stack.Navigator
@@ -19,7 +20,12 @@ const AppNavigator = () => {
       }}
     >
       {isAuthenticated ? (
-        <Stack.Screen name="Main" component={MainTabNavigator} />
+        // Conditionally render the appropriate navigator based on user role
+        user?.role === 'guide' ? (
+          <Stack.Screen name="GuideDashboard" component={GuideDashboardNavigator} />
+        ) : (
+          <Stack.Screen name="Main" component={MainTabNavigator} />
+        )
       ) : (
         <Stack.Screen name="Auth" component={AuthNavigator} />
       )}

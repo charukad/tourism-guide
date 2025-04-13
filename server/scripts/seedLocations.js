@@ -77,7 +77,7 @@ const locationsData = [
     isFeatured: true,
     averageRating: 4.8,
     reviewCount: 1245,
-    visitsCount: 5000,
+    visitsCount: 5008,
   },
   {
     name: 'Galle Fort',

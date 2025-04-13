@@ -1,5 +1,5 @@
 // Base URLs for different environments
-const DEV_API_URL = 'http://localhost:5000/api';
+const DEV_API_URL = 'http://localhost:5008/api';
 const STAGING_API_URL = 'https://staging-api.srilankaguide.com/api';
 const PROD_API_URL = 'https://api.srilankaguide.com/api';
 

@@ -111,6 +111,15 @@ const paperTheme = {
       }),
       fontWeight: '700',
     },
+    bodySmall: {
+      fontFamily: Platform.select({
+        web: 'Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif',
+        ios: 'System',
+        default: 'sans-serif',
+      }),
+      fontWeight: '400',
+      fontSize: 12,
+    },
   },
   animation: {
     scale: 1.0,
