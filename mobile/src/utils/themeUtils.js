@@ -1,7 +1,7 @@
 // src/utils/themeUtils.js
 
 // Import the original theme exports
-import theme, { COLORS, FONTS, SIZES, spacing } from '../constants/theme';
+import paperTheme, { COLORS, FONTS, SIZES, spacing } from '../constants/theme';
 
 // Re-export COLORS as colors to match the import statements in components
 export const colors = COLORS;
@@ -76,5 +76,5 @@ export function createSafeStyles(styleObj) {
   return safeStyles;
 }
 
-// Export the full theme as default
-export default theme;
+// Export the paper theme as default
+export default paperTheme;

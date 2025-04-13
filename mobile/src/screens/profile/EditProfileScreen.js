@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import * as ImagePicker from 'expo-image-picker';
-import { colors, spacing } from '../../constants/theme';
+import { COLORS, spacing } from '../../constants/theme';
 import Loading from '../../components/common/Loading';
 import api from '../../api/axios';
 import { API_ENDPOINTS } from '../../constants/api';
@@ -294,11 +294,12 @@ const EditProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: COLORS.background,
   },
   header: {
     alignItems: 'center',
     paddingVertical: spacing.xl,
+    backgroundColor: COLORS.primary,
   },
   avatarContainer: {
     position: 'relative',
@@ -309,76 +310,75 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 60,
+    backgroundColor: COLORS.background + '80',
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 60,
   },
   uploadingText: {
-    color: colors.background,
+    color: COLORS.primary,
     fontSize: 14,
-    fontWeight: 'bold',
   },
   editAvatarButton: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.md,
+    backgroundColor: COLORS.accent,
+    paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
-    borderRadius: 16,
+    borderRadius: spacing.sm,
   },
   editAvatarText: {
-    color: colors.background,
-    fontSize: 14,
+    color: COLORS.background,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   formContainer: {
     padding: spacing.lg,
   },
   input: {
-    marginBottom: spacing.md,
-    backgroundColor: colors.surface,
+    marginBottom: spacing.sm,
+    backgroundColor: COLORS.surface,
   },
   errorText: {
-    color: colors.error,
+    color: COLORS.error,
     fontSize: 12,
     marginBottom: spacing.sm,
-    marginLeft: spacing.xs,
   },
   labelText: {
     fontSize: 16,
+    color: COLORS.text,
     marginBottom: spacing.sm,
-    color: colors.textLight,
   },
   languageContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
   },
   languageOption: {
     flex: 1,
-    paddingVertical: spacing.sm,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.primary,
     marginHorizontal: spacing.xs,
-    borderRadius: 8,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: spacing.sm,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    alignItems: 'center',
   },
   selectedLanguage: {
-    backgroundColor: colors.primary,
+    backgroundColor: COLORS.primary,
   },
   languageText: {
-    color: colors.primary,
+    color: COLORS.primary,
+    fontSize: 14,
   },
   selectedLanguageText: {
-    color: colors.background,
-    fontWeight: 'bold',
+    color: COLORS.background,
   },
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: spacing.lg,
+    marginTop: spacing.md,
   },
   cancelButton: {
     flex: 1,

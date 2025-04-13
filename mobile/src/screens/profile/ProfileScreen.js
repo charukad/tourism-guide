@@ -4,7 +4,7 @@ import { Text, Avatar, List, Divider, Button, useTheme } from 'react-native-pape
 import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { logout } from '../../store/slices/authSlice';
-import { colors, spacing } from '../../constants/theme';
+import { COLORS, spacing } from '../../constants/theme';
 
 const ProfileScreen = ({ navigation }) => {
   const { user } = useSelector((state) => state.auth);
@@ -40,7 +40,7 @@ const ProfileScreen = ({ navigation }) => {
             style={styles.editAvatarButton}
             onPress={() => navigation.navigate('EditProfile')}
           >
-            <Ionicons name="camera" size={22} color={colors.background} />
+            <Ionicons name="camera" size={22} color={COLORS.background} />
           </TouchableOpacity>
         </View>
 
@@ -122,13 +122,13 @@ const ProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: COLORS.background,
   },
   header: {
     alignItems: 'center',
     paddingTop: spacing.xl,
     paddingBottom: spacing.lg,
-    backgroundColor: colors.primary,
+    backgroundColor: COLORS.primary,
   },
   avatarContainer: {
     position: 'relative',
@@ -138,31 +138,31 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: colors.accent,
+    backgroundColor: COLORS.accent,
     width: 36,
     height: 36,
     borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: colors.background,
+    borderColor: COLORS.background,
   },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: colors.background,
+    color: COLORS.background,
     marginBottom: spacing.xs,
   },
   role: {
     fontSize: 16,
-    color: colors.background,
+    color: COLORS.background,
     textTransform: 'capitalize',
     opacity: 0.8,
     marginBottom: spacing.xs,
   },
   email: {
     fontSize: 14,
-    color: colors.background,
+    color: COLORS.background,
     opacity: 0.8,
   },
   actionButtons: {
@@ -175,26 +175,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   section: {
-    backgroundColor: colors.surface,
+    backgroundColor: COLORS.surface,
     marginVertical: spacing.md,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: colors.divider,
+    borderColor: COLORS.divider,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     padding: spacing.md,
     paddingBottom: spacing.sm,
-    color: colors.textLight,
+    color: COLORS.textLight,
   },
   logoutButton: {
     margin: spacing.lg,
     marginTop: spacing.md,
-    borderColor: colors.error,
+    borderColor: COLORS.error,
   },
   logoutButtonLabel: {
-    color: colors.error,
+    color: COLORS.error,
   },
 });
 

@@ -8,7 +8,7 @@ import * as Localization from 'expo-localization';
 import * as FileSystem from 'expo-file-system';
 
 // Import theme and API services
-import { colors, spacing } from '../../constants/theme';
+import { COLORS, spacing } from '../../constants/theme';
 import api from '../../api/axios';
 import { API_ENDPOINTS } from '../../constants/api';
 
@@ -283,7 +283,7 @@ const SettingsScreen = ({ navigation }) => {
         <Appbar.Action icon="content-save" onPress={saveNotificationSettings} disabled={dataLoading} />
       </Appbar.Header>
       
-      {dataLoading && <ProgressBar indeterminate color={colors.primary} />}
+      {dataLoading && <ProgressBar indeterminate color={COLORS.primary} />}
       
       <ScrollView style={styles.scrollView}>
         <View style={styles.section}>
@@ -316,7 +316,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={notificationSettings.push}
                 onValueChange={(value) => setNotificationSettings(prev => ({ ...prev, push: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -329,7 +329,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={notificationSettings.email}
                 onValueChange={(value) => setNotificationSettings(prev => ({ ...prev, email: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -345,7 +345,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={alertSettings.weather}
                 onValueChange={(value) => setAlertSettings(prev => ({ ...prev, weather: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -358,7 +358,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={alertSettings.safety}
                 onValueChange={(value) => setAlertSettings(prev => ({ ...prev, safety: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -371,7 +371,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={alertSettings.traffic}
                 onValueChange={(value) => setAlertSettings(prev => ({ ...prev, traffic: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -384,7 +384,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={alertSettings.health}
                 onValueChange={(value) => setAlertSettings(prev => ({ ...prev, health: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -400,7 +400,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={socialSettings.likes}
                 onValueChange={(value) => setScocialSettings(prev => ({ ...prev, likes: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -413,7 +413,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={socialSettings.comments}
                 onValueChange={(value) => setScocialSettings(prev => ({ ...prev, comments: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -426,7 +426,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={socialSettings.mentions}
                 onValueChange={(value) => setScocialSettings(prev => ({ ...prev, mentions: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -439,7 +439,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={socialSettings.follows}
                 onValueChange={(value) => setScocialSettings(prev => ({ ...prev, follows: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -455,7 +455,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={bookingSettings.confirmations}
                 onValueChange={(value) => setBookingSettings(prev => ({ ...prev, confirmations: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -468,7 +468,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={bookingSettings.reminders}
                 onValueChange={(value) => setBookingSettings(prev => ({ ...prev, reminders: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -481,7 +481,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={bookingSettings.changes}
                 onValueChange={(value) => setBookingSettings(prev => ({ ...prev, changes: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -494,7 +494,7 @@ const SettingsScreen = ({ navigation }) => {
               <Switch
                 value={bookingSettings.cancellations}
                 onValueChange={(value) => setBookingSettings(prev => ({ ...prev, cancellations: value }))}
-                color={colors.primary}
+                color={COLORS.primary}
               />
             )}
           />
@@ -615,32 +615,32 @@ const SettingsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: COLORS.background,
   },
   scrollView: {
     flex: 1,
   },
   section: {
-    backgroundColor: colors.surface,
+    backgroundColor: COLORS.surface,
     marginVertical: spacing.sm,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: colors.divider,
+    borderColor: COLORS.divider,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     padding: spacing.md,
     paddingBottom: spacing.sm,
-    color: colors.textLight,
+    color: COLORS.textLight,
   },
   logoutButton: {
     margin: spacing.lg,
     marginTop: spacing.xl,
-    borderColor: colors.error,
+    borderColor: COLORS.error,
   },
   logoutButtonLabel: {
-    color: colors.error,
+    color: COLORS.error,
   },
   versionContainer: {
     alignItems: 'center',
@@ -650,7 +650,71 @@ const styles = StyleSheet.create({
   },
   versionText: {
     fontSize: 12,
-    color: colors.textLight,
+    color: COLORS.textLight,
+  },
+  settingItem: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+  },
+  settingTitle: {
+    fontSize: 16,
+    color: COLORS.text,
+  },
+  settingDescription: {
+    fontSize: 14,
+    color: COLORS.textLight,
+    marginTop: spacing.xs,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+  },
+  cacheInfo: {
+    fontSize: 14,
+    color: COLORS.textLight,
+    marginTop: spacing.xs,
+  },
+  progressBar: {
+    marginTop: spacing.sm,
+    backgroundColor: COLORS.divider,
+  },
+  dialogTitle: {
+    color: COLORS.text,
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  dialogContent: {
+    paddingHorizontal: spacing.md,
+  },
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+  },
+  languageLabel: {
+    marginLeft: spacing.sm,
+    fontSize: 16,
+    color: COLORS.text,
+  },
+  dialogActions: {
+    marginTop: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.md,
+  },
+  cancelButton: {
+    marginRight: spacing.sm,
+  },
+  dangerButton: {
+    backgroundColor: COLORS.error,
+  },
+  dangerText: {
+    color: COLORS.error,
+  },
+  divider: {
+    backgroundColor: COLORS.divider,
   },
 });
 

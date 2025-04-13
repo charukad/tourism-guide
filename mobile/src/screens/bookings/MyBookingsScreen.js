@@ -27,7 +27,7 @@ import { format } from 'date-fns';
 import EmptyState from '../../components/common/EmptyState';
 
 // Import theme
-import { colors, spacing } from '../../constants/theme';
+import { COLORS, spacing } from '../../constants/theme';
 
 const MyBookingsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -265,15 +265,15 @@ const MyBookingsScreen = ({ navigation }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'confirmed':
-        return colors.success;
+        return COLORS.success;
       case 'pending':
-        return colors.warning;
+        return COLORS.warning;
       case 'completed':
-        return colors.info;
+        return COLORS.info;
       case 'cancelled':
-        return colors.error;
+        return COLORS.error;
       default:
-        return colors.gray;
+        return COLORS.gray;
     }
   };
 
@@ -292,7 +292,7 @@ const MyBookingsScreen = ({ navigation }) => {
               <MaterialCommunityIcons 
                 name={item.type === 'guide' ? 'account-star' : 'car'} 
                 size={24} 
-                color={colors.primary} 
+                color={COLORS.primary} 
               />
               <Text style={styles.bookingTypeText}>
                 {item.type === 'guide' ? 'Guide' : 'Vehicle'}
@@ -313,7 +313,7 @@ const MyBookingsScreen = ({ navigation }) => {
           </Text>
           
           <Text style={styles.bookingLocation}>
-            <MaterialCommunityIcons name="map-marker" size={16} color={colors.primary} />
+            <MaterialCommunityIcons name="map-marker" size={16} color={COLORS.primary} />
             {' '}{item.location}
           </Text>
           
@@ -374,7 +374,7 @@ const MyBookingsScreen = ({ navigation }) => {
               mode="text" 
               onPress={() => handleCancelBooking(item)}
               icon="cancel"
-              textColor={colors.error}
+              textColor={COLORS.error}
             >
               Cancel
             </Button>
@@ -385,7 +385,7 @@ const MyBookingsScreen = ({ navigation }) => {
               mode="text" 
               onPress={() => handleWriteReview(item)}
               icon="star-outline"
-              textColor={colors.primary}
+              textColor={COLORS.primary}
             >
               Review
             </Button>
@@ -396,7 +396,7 @@ const MyBookingsScreen = ({ navigation }) => {
               mode="text" 
               onPress={() => handleViewReview(item)}
               icon="star"
-              textColor={colors.primary}
+              textColor={COLORS.primary}
             >
               View Review
             </Button>
@@ -471,7 +471,7 @@ const MyBookingsScreen = ({ navigation }) => {
         }
         ListEmptyComponent={renderEmptyState}
         ListFooterComponent={loading && !refreshing ? (
-          <ActivityIndicator style={styles.loader} color={colors.primary} size="large" />
+          <ActivityIndicator style={styles.loader} color={COLORS.primary} size="large" />
         ) : null}
       />
       
@@ -494,7 +494,7 @@ const MyBookingsScreen = ({ navigation }) => {
             <Button onPress={() => setCancelDialogVisible(false)}>No, Keep It</Button>
             <Button 
               onPress={confirmCancelBooking}
-              textColor={colors.error}
+              textColor={COLORS.error}
             >
               Yes, Cancel
             </Button>
@@ -508,17 +508,17 @@ const MyBookingsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: COLORS.background,
   },
   filterContainer: {
     padding: spacing.md,
-    backgroundColor: colors.surface,
+    backgroundColor: COLORS.surface,
     borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
+    borderBottomColor: COLORS.divider,
   },
   searchBar: {
     marginBottom: spacing.sm,
-    backgroundColor: colors.background,
+    backgroundColor: COLORS.background,
   },
   segmentedButtons: {
     marginTop: spacing.xs,
@@ -545,7 +545,7 @@ const styles = StyleSheet.create({
     marginLeft: spacing.xs,
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: COLORS.primary,
   },
   statusChip: {
     height: 28,
@@ -557,7 +557,7 @@ const styles = StyleSheet.create({
   },
   bookingLocation: {
     fontSize: 14,
-    color: colors.textLight,
+    color: COLORS.textLight,
     marginBottom: spacing.sm,
   },
   bookingDates: {
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
   },
   bookingDetails: {
     marginTop: spacing.sm,
-    backgroundColor: colors.backgroundLight,
+    backgroundColor: COLORS.backgroundLight,
     padding: spacing.sm,
     borderRadius: 4,
   },
@@ -591,16 +591,16 @@ const styles = StyleSheet.create({
   cancellationReason: {
     marginTop: spacing.sm,
     padding: spacing.sm,
-    backgroundColor: colors.error + '10',
+    backgroundColor: COLORS.error + '10',
     borderRadius: 4,
   },
   cancellationLabel: {
     fontWeight: 'bold',
-    color: colors.error,
+    color: COLORS.error,
     marginBottom: spacing.xs,
   },
   cancellationText: {
-    color: colors.error,
+    color: COLORS.error,
   },
   cardActions: {
     justifyContent: 'space-around',

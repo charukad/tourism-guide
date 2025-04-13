@@ -20,7 +20,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import EmptyState from '../../components/common/EmptyState';
 
 // Import theme and utilities
-import { colors, spacing } from '../../constants/theme';
+import { COLORS, spacing } from '../../constants/theme';
 import { format } from 'date-fns';
 
 // In a real app, we would import actions from redux store
@@ -209,7 +209,7 @@ const ReviewableEntitiesScreen = ({ navigation, route }) => {
               </Chip>
               
               <Text style={styles.entityLocation}>
-                <MaterialCommunityIcons name="map-marker" size={14} color={colors.primary} />
+                <MaterialCommunityIcons name="map-marker" size={14} color={COLORS.primary} />
                 {' '}{item.location}
               </Text>
             </View>
@@ -312,7 +312,7 @@ const ReviewableEntitiesScreen = ({ navigation, route }) => {
           </Text>
         }
         ListFooterComponent={loading && !refreshing ? (
-          <ActivityIndicator style={styles.loader} color={colors.primary} size="large" />
+          <ActivityIndicator style={styles.loader} color={COLORS.primary} size="large" />
         ) : filteredEntities.length > 0 ? (
           <Text style={styles.listFooter}>
             Sharing your experiences helps other travelers make better decisions.
@@ -326,17 +326,17 @@ const ReviewableEntitiesScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: COLORS.background,
   },
   filterContainer: {
     padding: spacing.md,
-    backgroundColor: colors.surface,
+    backgroundColor: COLORS.surface,
     borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
+    borderBottomColor: COLORS.divider,
   },
   searchBar: {
     marginBottom: spacing.sm,
-    backgroundColor: colors.backgroundLight,
+    backgroundColor: COLORS.backgroundLight,
   },
   segmentedButtons: {
     marginTop: spacing.xs,
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     padding: spacing.md,
     paddingBottom: spacing.sm,
-    color: colors.textLight,
+    color: COLORS.textLight,
   },
   entityList: {
     padding: spacing.sm,
@@ -376,19 +376,19 @@ const styles = StyleSheet.create({
   entityTypeChip: {
     alignSelf: 'flex-start',
     marginBottom: 4,
-    backgroundColor: colors.primary + '20',
+    backgroundColor: COLORS.primary + '20',
   },
   entityTypeText: {
-    color: colors.primary,
+    color: COLORS.primary,
   },
   entityLocation: {
     fontSize: 14,
-    color: colors.textLight,
+    color: COLORS.textLight,
   },
   entityDescription: {
     fontSize: 14,
     marginBottom: spacing.sm,
-    color: colors.text,
+    color: COLORS.text,
     lineHeight: 20,
   },
   entityFooter: {
@@ -398,18 +398,18 @@ const styles = StyleSheet.create({
   },
   entityDate: {
     fontSize: 12,
-    color: colors.textLight,
+    color: COLORS.textLight,
   },
   bookingRef: {
     fontSize: 12,
-    color: colors.textLight,
+    color: COLORS.textLight,
   },
   cardActions: {
     justifyContent: 'flex-end',
     paddingTop: 0,
   },
   reviewButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: COLORS.primary,
   },
   loader: {
     padding: spacing.xl,
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
   listFooter: {
     textAlign: 'center',
     padding: spacing.lg,
-    color: colors.textLight,
+    color: COLORS.textLight,
     fontStyle: 'italic',
   },
 });

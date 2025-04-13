@@ -21,7 +21,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { createItineraryItem } from '../../store/slices/itinerariesSlice';
 import { fetchLocationById } from '../../store/slices/locationsSlice';
-import { colors, spacing } from '../../constants/theme';
+import { COLORS, spacing } from '../../constants/theme';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -286,13 +286,13 @@ const AddItineraryItemScreen = ({ route, navigation }) => {
   const getTypeIcon = () => {
     switch (type) {
       case 'transport':
-        return <MaterialIcons name="directions-car" size={24} color={colors.info} />;
+        return <MaterialIcons name="directions-car" size={24} color={COLORS.info} />;
       case 'accommodation':
-        return <MaterialIcons name="hotel" size={24} color={colors.success} />;
+        return <MaterialIcons name="hotel" size={24} color={COLORS.success} />;
       case 'meal':
-        return <MaterialIcons name="restaurant" size={24} color={colors.accent} />;
+        return <MaterialIcons name="restaurant" size={24} color={COLORS.accent} />;
       default:
-        return <MaterialIcons name="location-pin" size={24} color={colors.primary} />;
+        return <MaterialIcons name="location-pin" size={24} color={COLORS.primary} />;
     }
   };
 
@@ -312,7 +312,7 @@ const AddItineraryItemScreen = ({ route, navigation }) => {
 
         {locationLoading && locationId ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="small" color={colors.primary} />
+            <ActivityIndicator size="small" color={COLORS.primary} />
             <Text style={styles.loadingText}>Loading location details...</Text>
           </View>
         ) : (
@@ -476,44 +476,44 @@ const AddItineraryItemScreen = ({ route, navigation }) => {
                     >
                       <View style={styles.radioGroup}>
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="car" color={colors.primary} />
+                          <RadioButton.Android value="car" color={COLORS.primary} />
                           <Text>Car</Text>
                         </View>
                         
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="bus" color={colors.primary} />
+                          <RadioButton.Android value="bus" color={COLORS.primary} />
                           <Text>Bus</Text>
                         </View>
                         
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="train" color={colors.primary} />
+                          <RadioButton.Android value="train" color={COLORS.primary} />
                           <Text>Train</Text>
                         </View>
                         
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="taxi" color={colors.primary} />
+                          <RadioButton.Android value="taxi" color={COLORS.primary} />
                           <Text>Taxi</Text>
                         </View>
                       </View>
                       
                       <View style={styles.radioGroup}>
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="walk" color={colors.primary} />
+                          <RadioButton.Android value="walk" color={COLORS.primary} />
                           <Text>Walk</Text>
                         </View>
                         
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="bicycle" color={colors.primary} />
+                          <RadioButton.Android value="bicycle" color={COLORS.primary} />
                           <Text>Bicycle</Text>
                         </View>
                         
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="flight" color={colors.primary} />
+                          <RadioButton.Android value="flight" color={COLORS.primary} />
                           <Text>Flight</Text>
                         </View>
                         
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="other" color={colors.primary} />
+                          <RadioButton.Android value="other" color={COLORS.primary} />
                           <Text>Other</Text>
                         </View>
                       </View>
@@ -565,22 +565,22 @@ const AddItineraryItemScreen = ({ route, navigation }) => {
                     >
                       <View style={styles.radioGroup}>
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="hotel" color={colors.primary} />
+                          <RadioButton.Android value="hotel" color={COLORS.primary} />
                           <Text>Hotel</Text>
                         </View>
                         
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="hostel" color={colors.primary} />
+                          <RadioButton.Android value="hostel" color={COLORS.primary} />
                           <Text>Hostel</Text>
                         </View>
                         
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="apartment" color={colors.primary} />
+                          <RadioButton.Android value="apartment" color={COLORS.primary} />
                           <Text>Apartment</Text>
                         </View>
                         
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="guesthouse" color={colors.primary} />
+                          <RadioButton.Android value="guesthouse" color={COLORS.primary} />
                           <Text>Guesthouse</Text>
                         </View>
                       </View>
@@ -663,22 +663,22 @@ const AddItineraryItemScreen = ({ route, navigation }) => {
                     >
                       <View style={styles.radioGroup}>
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="breakfast" color={colors.primary} />
+                          <RadioButton.Android value="breakfast" color={COLORS.primary} />
                           <Text>Breakfast</Text>
                         </View>
                         
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="lunch" color={colors.primary} />
+                          <RadioButton.Android value="lunch" color={COLORS.primary} />
                           <Text>Lunch</Text>
                         </View>
                         
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="dinner" color={colors.primary} />
+                          <RadioButton.Android value="dinner" color={COLORS.primary} />
                           <Text>Dinner</Text>
                         </View>
                         
                         <View style={styles.radioOption}>
-                          <RadioButton.Android value="snack" color={colors.primary} />
+                          <RadioButton.Android value="snack" color={COLORS.primary} />
                           <Text>Snack</Text>
                         </View>
                       </View>
@@ -722,17 +722,17 @@ const AddItineraryItemScreen = ({ route, navigation }) => {
                   >
                     <View style={styles.currencyContainer}>
                       <View style={styles.radioOption}>
-                        <RadioButton.Android value="USD" color={colors.primary} />
+                        <RadioButton.Android value="USD" color={COLORS.primary} />
                         <Text>USD</Text>
                       </View>
                       
                       <View style={styles.radioOption}>
-                        <RadioButton.Android value="LKR" color={colors.primary} />
+                        <RadioButton.Android value="LKR" color={COLORS.primary} />
                         <Text>LKR</Text>
                       </View>
                       
                       <View style={styles.radioOption}>
-                        <RadioButton.Android value="EUR" color={colors.primary} />
+                        <RadioButton.Android value="EUR" color={COLORS.primary} />
                         <Text>EUR</Text>
                       </View>
                     </View>

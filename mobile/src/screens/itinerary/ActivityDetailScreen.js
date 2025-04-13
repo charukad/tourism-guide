@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Platform,
   SafeAreaView,
+  FlatList,  // Add this import
 } from 'react-native';
 import {
   Appbar,
@@ -23,13 +24,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 
-// Fix: Use require with fallback for Carousel import
-const Carousel = require('react-native-snap-carousel').default || require('react-native-snap-carousel');
-
 // Import from the utility file instead of directly from theme
 import { colors, COLORS, FONTS } from '../../utils/themeUtils';
 
-// Import actions
+// Fixed import path
 import { fetchItineraryItemById, deleteItineraryItem } from '../../store/slices/itinerariesSlice';
 
 // Activity type definitions
@@ -126,6 +124,7 @@ const ActivityDetailScreen = ({ navigation, route }) => {
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
   const [carouselActiveIndex, setCarouselActiveIndex] = useState(0);
   const [error, setError] = useState(null);
+  const flatListRef = useRef(null);
   
   // Fetch activity details safely
   useEffect(() => {
@@ -219,10 +218,8 @@ const ActivityDetailScreen = ({ navigation, route }) => {
     }
   };
   
-  // Render carousel item safely
-  const renderCarouselItem = ({ item }) => {
-    if (!item) return null;
-    
+  // Custom FlatList-based carousel
+  const renderImage = ({ item }) => {
     return (
       <Image
         source={{ uri: item }}
@@ -231,6 +228,17 @@ const ActivityDetailScreen = ({ navigation, route }) => {
       />
     );
   };
+
+  // Handle changing images
+  const handleViewableItemsChanged = useRef(({ viewableItems }) => {
+    if (viewableItems.length > 0) {
+      setCarouselActiveIndex(viewableItems[0].index);
+    }
+  }).current;
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50
+  }).current;
   
   return (
     <View style={styles.container}>
@@ -243,31 +251,40 @@ const ActivityDetailScreen = ({ navigation, route }) => {
       
       <ScrollView style={styles.scrollView}>
         {/* Photos Carousel */}
-        {activity?.photos && activity.photos.length > 0 ? (
+        {activity?.photos && Array.isArray(activity.photos) && activity.photos.length > 0 ? (
           <View style={styles.carouselContainer}>
-            <Carousel
+            <FlatList
+              ref={flatListRef}
               data={activity.photos}
-              renderItem={renderCarouselItem}
-              sliderWidth={screenWidth}
-              itemWidth={screenWidth}
-              onSnapToItem={setCarouselActiveIndex}
-              loop={activity.photos.length > 1}
-              autoplay={false}
-              inactiveSlideOpacity={1}
-              inactiveSlideScale={1}
-              useScrollView={true} // Adding this for better compatibility
+              renderItem={renderImage}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onViewableItemsChanged={handleViewableItemsChanged}
+              viewabilityConfig={viewabilityConfig}
+              keyExtractor={(_, index) => index.toString()}
             />
             
             {activity.photos.length > 1 && (
               <View style={styles.paginationContainer}>
                 {activity.photos.map((_, index) => (
-                  <View
+                  <TouchableOpacity 
                     key={index.toString()}
-                    style={[
-                      styles.paginationDot,
-                      index === carouselActiveIndex && styles.paginationDotActive
-                    ]}
-                  />
+                    onPress={() => {
+                      setCarouselActiveIndex(index);
+                      flatListRef.current?.scrollToIndex({
+                        index,
+                        animated: true
+                      });
+                    }}
+                  >
+                    <View
+                      style={[
+                        styles.paginationDot,
+                        index === carouselActiveIndex && styles.paginationDotActive
+                      ]}
+                    />
+                  </TouchableOpacity>
                 ))}
               </View>
             )}
