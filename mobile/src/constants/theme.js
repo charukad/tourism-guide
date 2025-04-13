@@ -1,4 +1,6 @@
 // src/constants/theme.js
+import { Platform } from 'react-native';
+import { MD3LightTheme } from 'react-native-paper';
 
 // Define colors with descriptive names
 export const COLORS = {
@@ -63,13 +65,57 @@ export const spacing = {
   xl: SIZES.xl,
 };
 
-// Export the theme object as default
-const theme = {
-  COLORS,
-  FONTS,
-  SIZES,
-  spacing,
-  colors: COLORS, // Alternative accessor for consistency with React Native Paper
+// Create the React Native Paper theme by extending MD3LightTheme
+const paperTheme = {
+  ...MD3LightTheme,
+  dark: false,
+  roundness: SIZES.radius,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: COLORS.primary,
+    secondary: COLORS.secondary,
+    accent: COLORS.accent,
+    background: COLORS.background,
+    surface: COLORS.surface,
+    error: COLORS.error,
+    text: COLORS.text,
+    onSurface: COLORS.text,
+    disabled: COLORS.textLight,
+    placeholder: COLORS.textLight,
+    backdrop: COLORS.background,
+    notification: COLORS.accent,
+  },
+  fonts: {
+    ...MD3LightTheme.fonts,
+    regular: {
+      fontFamily: Platform.select({
+        web: 'Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif',
+        ios: 'System',
+        default: 'sans-serif',
+      }),
+      fontWeight: '400',
+    },
+    medium: {
+      fontFamily: Platform.select({
+        web: 'Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif',
+        ios: 'System',
+        default: 'sans-serif-medium',
+      }),
+      fontWeight: '500',
+    },
+    bold: {
+      fontFamily: Platform.select({
+        web: 'Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif',
+        ios: 'System',
+        default: 'sans-serif',
+      }),
+      fontWeight: '700',
+    },
+  },
+  animation: {
+    scale: 1.0,
+  },
 };
 
-export default theme;
+// Export the theme object as default
+export default paperTheme;

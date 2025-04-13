@@ -8,8 +8,8 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { login, clearAuthError } from '../../store/slices/authSlice';
 
-// Change this import to use the new utility file
-import { colors, spacing } from '../../utils/themeUtils';
+// Import theme and utilities
+import { COLORS, spacing } from '../../constants/theme';
 
 // Validation schema
 const LoginSchema = Yup.object().shape({
@@ -141,7 +141,7 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,  // This was causing the error
+    backgroundColor: COLORS.background,  // This was causing the error
   },
   scrollContainer: {
     flexGrow: 1,
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: COLORS.primary,
     marginTop: spacing.sm,
   },
   formContainer: {
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: colors.textLight,
+    color: COLORS.textLight,
     marginBottom: spacing.lg,
   },
   form: {
@@ -180,10 +180,10 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: spacing.sm,
-    backgroundColor: colors.surface,
+    backgroundColor: COLORS.surface,
   },
   errorText: {
-    color: colors.error,
+    color: COLORS.error,
     fontSize: 12,
     marginBottom: spacing.sm,
     marginLeft: spacing.xs,
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   forgotPasswordText: {
-    color: colors.primary,
+    color: COLORS.primary,
   },
   button: {
     marginTop: spacing.sm,
@@ -205,14 +205,14 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl,
   },
   registerText: {
-    color: colors.textLight,
+    color: COLORS.textLight,
   },
   registerLink: {
-    color: colors.primary,
+    color: COLORS.primary,
     fontWeight: 'bold',
   },
   snackbar: {
-    backgroundColor: colors.error,
+    backgroundColor: COLORS.error,
   },
 });
 
