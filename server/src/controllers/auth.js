@@ -355,32 +355,63 @@ exports.refreshToken = async (req, res, next) => {
 // @desc    Get current user profile
 // @route   GET /api/auth/me
 // @access  Private
-exports.getMe = async (req, res, next) => {
+exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-
+    // Find user by id
+    const user = await User.findById(req.user.id).select('-password');
+    
+    // If user is a guide, fetch guide profile
+    let guideProfile = null;
+    if (user.role === 'guide') {
+      // Find guide profile by user id
+      guideProfile = await Guide.findOne({ userId: user._id });
+      // If not found by userId, try email
+      if (!guideProfile) {
+        guideProfile = await Guide.findOne({ email: user.email });
+      }
+      
+      console.log('Guide profile found for /auth/me:', guideProfile ? guideProfile._id : 'Not found');
+    }
+    
+    // Prepare response
+    const responseData = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      role: user.role,
+      avatar: user.avatar,
+      isEmailVerified: user.isEmailVerified,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+    
+    // Add guide profile if exists
+    if (guideProfile) {
+      responseData.guide = {
+        bio: guideProfile.bio || '',
+        experience: guideProfile.experience || 0,
+        languages: guideProfile.languages || [],
+        expertise: guideProfile.expertise || [],
+        serviceAreas: guideProfile.serviceAreas || [],
+        rates: guideProfile.rates || { hourly: 0, daily: 0 },
+        isVerified: guideProfile.isVerified || false,
+        verificationStatus: guideProfile.verificationStatus || 'unsubmitted',
+      };
+    }
+    
     res.status(200).json({
       status: 'success',
       data: {
-        user: {
-          id: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          role: user.role,
-          profileImage: user.profileImage,
-          isVerified: user.isVerified,
-          phoneNumber: user.phoneNumber,
-          preferredLanguage: user.preferredLanguage,
-          notificationSettings: user.notificationSettings,
-          createdAt: user.createdAt,
-        }
+        user: responseData
       }
     });
   } catch (error) {
-    console.error('Get profile error:', error);
-    res.status(500).json(
-      errorResponse('Server error retrieving user profile', 500)
-    );
+    console.error('Get me error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Server error',
+    });
   }
 };

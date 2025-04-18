@@ -17,18 +17,67 @@ exports.getGuideProfile = async (req, res) => {
       );
     }
 
-    // Find guide profile
-    const guide = await Guide.findOne({ userId: req.user._id });
+    // Find guide profile by email first, then by userId if not found
+    let guide = await Guide.findOne({ email: req.user.email });
+    
+    // If not found by email, try userId
+    if (!guide) {
+      guide = await Guide.findOne({ userId: req.user._id });
+      
+      // If found by userId but no email, update to add email
+      if (guide && !guide.email) {
+        guide.email = req.user.email;
+        await guide.save();
+        console.log('Added email to existing guide profile:', req.user.email);
+      }
+    }
 
     if (!guide) {
-      return res.status(404).json(
-        errorResponse('Guide profile not found', 404)
-      );
+      // No profile found, return default empty values
+      return res.status(200).json({
+        status: 'success',
+        data: { 
+          guide: {
+            email: req.user.email,
+            userId: req.user._id,
+            expertise: [],
+            languages: [],
+            experience: 0,
+            bio: '',
+            serviceAreas: [],
+            isVerified: false,
+            verificationStatus: 'unsubmitted',
+            isProfileComplete: false
+          } 
+        }
+      });
     }
+
+    // Calculate profile completeness
+    const isProfileComplete = 
+      guide.bio && 
+      guide.bio.length > 10 && 
+      guide.languages && guide.languages.length > 0 && 
+      guide.expertise && guide.expertise.length > 0 &&
+      guide.serviceAreas && guide.serviceAreas.length > 0;
 
     res.status(200).json({
       status: 'success',
-      data: { guide }
+      data: { 
+        guide: {
+          _id: guide._id,
+          userId: guide.userId, 
+          email: guide.email,
+          bio: guide.bio || '',
+          experience: guide.experience || 0,
+          languages: guide.languages || [],
+          expertise: guide.expertise || [],
+          serviceAreas: guide.serviceAreas || [],
+          rates: guide.rates || { hourly: 0, daily: 0 },
+          isVerified: guide.isVerified || false,
+          verificationStatus: guide.verificationStatus || 'unsubmitted'
+        }
+      }
     });
   } catch (error) {
     console.error('Error getting guide profile:', error);
@@ -65,7 +114,9 @@ exports.updateGuideProfile = async (req, res) => {
     } = req.body;
 
     // Fields to update
-    const updateFields = {};
+    const updateFields = {
+      email: req.user.email // Ensure email is always updated
+    };
 
     if (nic) updateFields.nic = nic;
     if (licenseNumber) updateFields.licenseNumber = licenseNumber;
@@ -76,27 +127,72 @@ exports.updateGuideProfile = async (req, res) => {
     if (bio) updateFields.bio = bio;
     if (serviceAreas) updateFields.serviceAreas = serviceAreas;
     if (rates) {
-      if (rates.hourly) updateFields['rates.hourly'] = rates.hourly;
-      if (rates.daily) updateFields['rates.daily'] = rates.daily;
-      if (rates.currency) updateFields['rates.currency'] = rates.currency;
+      if (!updateFields.rates) updateFields.rates = {};
+      if (rates.hourly) updateFields.rates.hourly = rates.hourly;
+      if (rates.daily) updateFields.rates.daily = rates.daily;
+      if (rates.currency) updateFields.rates.currency = rates.currency;
     }
 
-    // Update guide profile
-    const guide = await Guide.findOneAndUpdate(
-      { userId: req.user._id },
-      { $set: updateFields },
-      { new: true, runValidators: true }
-    );
-
-    if (!guide) {
-      return res.status(404).json(
-        errorResponse('Guide profile not found', 404)
+    // Find guide by email first
+    let guide = await Guide.findOne({ email: req.user.email });
+    
+    if (guide) {
+      // Update existing guide profile
+      guide = await Guide.findByIdAndUpdate(
+        guide._id,
+        { $set: updateFields },
+        { new: true, runValidators: true }
       );
+      console.log('Updated existing guide profile for:', req.user.email);
+      
+      // Log the guide data that is being sent to the client
+      console.log('GUIDE DATA BEING SENT TO CLIENT:', JSON.stringify({
+        id: guide._id,
+        email: guide.email,
+        bio: guide.bio,
+        experience: guide.experience,
+        languages: guide.languages,
+        expertise: guide.expertise,
+        serviceAreas: guide.serviceAreas,
+        rates: guide.rates
+      }, null, 2));
+    } else {
+      // Try to find by userId
+      guide = await Guide.findOne({ userId: req.user._id });
+      
+      if (guide) {
+        // Update existing guide profile and add email
+        guide = await Guide.findByIdAndUpdate(
+          guide._id,
+          { $set: updateFields },
+          { new: true, runValidators: true }
+        );
+        console.log('Updated existing guide profile and added email for:', req.user.email);
+      } else {
+        // Create new guide profile
+        updateFields.userId = req.user._id;
+        guide = await Guide.create(updateFields);
+        console.log('Created new guide profile for:', req.user.email);
+      }
     }
 
     res.status(200).json({
       status: 'success',
-      data: { guide }
+      data: { 
+        guide: {
+          _id: guide._id,
+          userId: guide.userId,
+          email: guide.email,
+          bio: guide.bio || '',
+          experience: guide.experience || 0,
+          languages: guide.languages || [],
+          expertise: guide.expertise || [],
+          serviceAreas: guide.serviceAreas || [],
+          rates: guide.rates || { hourly: 0, daily: 0 },
+          isVerified: guide.isVerified || false,
+          verificationStatus: guide.verificationStatus || 'unsubmitted'
+        }
+      }
     });
   } catch (error) {
     console.error('Error updating guide profile:', error);
@@ -239,6 +335,74 @@ exports.updateAvailability = async (req, res) => {
 };
 
 /**
+ * @desc    Get guide by ID
+ * @route   GET /api/guides/:id
+ * @access  Public
+ */
+exports.getGuideById = async (req, res) => {
+  try {
+    // Find guide by ID
+    const guide = await Guide.findById(req.params.id)
+      .populate('userId', 'firstName lastName email avatar')
+      .populate('reviews');
+
+    if (!guide) {
+      // Try finding by userId
+      const guideByUserId = await Guide.findOne({ userId: req.params.id })
+        .populate('userId', 'firstName lastName email avatar')
+        .populate('reviews');
+
+      if (!guideByUserId) {
+        return res.status(404).json(
+          errorResponse('Guide not found', 404)
+        );
+      }
+
+      // Calculate profile completeness
+      const isProfileComplete = 
+        guideByUserId.bio && 
+        guideByUserId.bio.length > 10 && 
+        guideByUserId.languages && guideByUserId.languages.length > 0 && 
+        guideByUserId.expertise && guideByUserId.expertise.length > 0 &&
+        guideByUserId.serviceAreas && guideByUserId.serviceAreas.length > 0;
+
+      return res.status(200).json({
+        status: 'success',
+        data: { 
+          guide: {
+            ...guideByUserId.toObject(),
+            isProfileComplete
+          } 
+        }
+      });
+    }
+
+    // Calculate profile completeness
+    const isProfileComplete = 
+      guide.bio && 
+      guide.bio.length > 10 && 
+      guide.languages && guide.languages.length > 0 && 
+      guide.expertise && guide.expertise.length > 0 &&
+      guide.serviceAreas && guide.serviceAreas.length > 0;
+
+    res.status(200).json({
+      status: 'success',
+      data: { 
+        guide: {
+          ...guide.toObject(),
+          isProfileComplete
+        } 
+      }
+    });
+  } catch (error) {
+    console.error('Error getting guide by ID:', error);
+    res.status(500).json(
+      errorResponse('Server error retrieving guide', 500)
+    );
+  }
+};
+
+/**
  * @desc    Get list of guides
  * @route   GET /api/guides
  * @access  Public
@@ -248,96 +412,69 @@ exports.getGuides = async (req, res) => {
     // Extract query parameters
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
-    const skipIndex = (page - 1) * limit;
-    
-    // Build filter query
-    const filterQuery = { isVerified: true }; // Only return verified guides
-    
+    const skip = (page - 1) * limit;
+
+    // Build filter object
+    const filter = {};
+
+    // Add filters for expertise, language, location if provided
     if (req.query.expertise) {
-      filterQuery.expertise = { $in: req.query.expertise.split(',') };
+      filter.expertise = { $in: req.query.expertise.split(',') };
     }
-    
-    if (req.query.languages) {
-      filterQuery.languages = { $in: req.query.languages.split(',') };
+    if (req.query.language) {
+      filter.languages = { $in: req.query.language.split(',') };
     }
-    
-    if (req.query.serviceAreas) {
-      filterQuery.serviceAreas = { $in: req.query.serviceAreas.split(',') };
+    if (req.query.location) {
+      filter.serviceAreas = { $in: req.query.location.split(',') };
     }
-    
-    if (req.query.minRating) {
-      filterQuery.averageRating = { $gte: parseFloat(req.query.minRating) };
+
+    // Add filter for verified guides if requested
+    if (req.query.verified === 'true') {
+      filter.isVerified = true;
     }
+
+    // Execute query
+    const guides = await Guide.find(filter)
+      .populate('userId', 'firstName lastName email avatar')
+      .sort(req.query.sort || '-averageRating')
+      .skip(skip)
+      .limit(limit);
+
+    // Get total count for pagination
+    const total = await Guide.countDocuments(filter);
     
-    // Get total count
-    const total = await Guide.countDocuments(filterQuery);
-    
-    // Get guides with pagination
-    const guides = await Guide.find(filterQuery)
-      .sort({ averageRating: -1 }) // Sort by rating (highest first)
-      .skip(skipIndex)
-      .limit(limit)
-      .populate({
-        path: 'userId',
-        select: 'firstName lastName profileImage',
-        model: User
-      });
-    
-    // Calculate pagination details
-    const totalPages = Math.ceil(total / limit);
-    
+    // Add profile completeness info to each guide
+    const guidesWithCompletion = guides.map(guide => {
+      const isProfileComplete = 
+        guide.bio && 
+        guide.bio.length > 10 && 
+        guide.languages && guide.languages.length > 0 && 
+        guide.expertise && guide.expertise.length > 0 &&
+        guide.serviceAreas && guide.serviceAreas.length > 0;
+        
+      return {
+        ...guide.toObject(),
+        isProfileComplete
+      };
+    });
+
     res.status(200).json({
       status: 'success',
-      data: {
-        count: guides.length,
+      results: guides.length,
+      pagination: {
         total,
-        pagination: {
-          currentPage: page,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrev: page > 1
-        },
-        guides
+        page,
+        pages: Math.ceil(total / limit),
+        limit
+      },
+      data: {
+        guides: guidesWithCompletion
       }
     });
   } catch (error) {
     console.error('Error getting guides:', error);
     res.status(500).json(
       errorResponse('Server error retrieving guides', 500)
-    );
-  }
-};
-
-/**
- * @desc    Get guide by ID
- * @route   GET /api/guides/:id
- * @access  Public
- */
-exports.getGuideById = async (req, res) => {
-  try {
-    const guide = await Guide.findOne({ 
-      userId: req.params.id,
-      isVerified: true
-    }).populate({
-      path: 'userId',
-      select: 'firstName lastName profileImage',
-      model: User
-    });
-    
-    if (!guide) {
-      return res.status(404).json(
-        errorResponse('Guide not found or not verified', 404)
-      );
-    }
-    
-    res.status(200).json({
-      status: 'success',
-      data: { guide }
-    });
-  } catch (error) {
-    console.error('Error getting guide by ID:', error);
-    res.status(500).json(
-      errorResponse('Server error retrieving guide', 500)
     );
   }
 };

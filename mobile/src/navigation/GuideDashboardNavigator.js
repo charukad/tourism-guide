@@ -7,7 +7,7 @@ import GuideDashboardScreen from '../screens/guide/DashboardScreen';
 import GuideBookingsScreen from '../screens/guide/BookingsScreen';
 import GuideReviewsScreen from '../screens/guide/ReviewsScreen';
 import GuideEarningsScreen from '../screens/guide/EarningsScreen';
-import ProfileScreen from '../screens/guide/ProfileScreen';
+import ProfileNavigator from './ProfileNavigator';
 
 // Import theme
 import { COLORS } from '../constants/theme';
@@ -76,12 +76,15 @@ const GuideDashboardNavigator = () => {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ProfileNavigator}
         options={{
+          headerShown: false,
+          tabBarLabel: 'Profile',
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="person" color={color} size={size} />
           ),
         }}
+        initialParams={{ userRole: 'guide' }}
       />
     </Tab.Navigator>
   );

@@ -41,7 +41,7 @@ const ProfileScreen = ({ navigation }) => {
           const currentState = store.getState();
           console.log('DEBUG - User from Redux after loadUser:', 
             JSON.stringify({
-              guide: currentState.auth.user?.guide || null,
+              tourist: currentState.auth.user?.tourist || null,
               firstName: currentState.auth.user?.firstName,
               id: currentState.auth.user?._id
             }, null, 2)
@@ -51,15 +51,15 @@ const ProfileScreen = ({ navigation }) => {
         } catch (error) {
           console.log('Failed to load user from server, trying cache:', error);
           
-          // Try to get cached guide data
+          // Try to get cached tourist data
           try {
-            const cachedGuideData = await AsyncStorage.getItem('cachedGuideData');
-            if (cachedGuideData) {
-              const parsedGuideData = JSON.parse(cachedGuideData);
-              dispatch(updateProfile({ guide: parsedGuideData }));
+            const cachedTouristData = await AsyncStorage.getItem('cachedTouristData');
+            if (cachedTouristData) {
+              const parsedTouristData = JSON.parse(cachedTouristData);
+              dispatch(updateProfile({ tourist: parsedTouristData }));
             }
           } catch (cacheError) {
-            console.log('Failed to load cached guide data:', cacheError);
+            console.log('Failed to load cached tourist data:', cacheError);
           }
         }
       };
@@ -78,7 +78,7 @@ const ProfileScreen = ({ navigation }) => {
     };
   }, []);
 
-  // Fetch user profile image when component mounts
+  // Fetch user profile image when component mounts - same as guide profile
   const fetchProfileImage = useCallback(async () => {
     // Prevent multiple redundant calls
     if (refreshing || (!loading && hasFetchedRef.current)) return;
@@ -151,7 +151,7 @@ const ProfileScreen = ({ navigation }) => {
         setRefreshing(false);
       }
     }
-  }, [dispatch, user?.id]); // Only depend on user.id, not the entire user object
+  }, [dispatch, user?.id]);
   
   useEffect(() => {
     // Only fetch if we haven't fetched before or explicitly refreshing
@@ -215,6 +215,7 @@ const ProfileScreen = ({ navigation }) => {
     }
   };
 
+  // Same uploadImage function as guide profile
   const uploadImage = async (imageAsset) => {
     if (!isMounted.current) return;
     
@@ -344,14 +345,6 @@ const ProfileScreen = ({ navigation }) => {
             style={styles.avatar}
           />
           
-          {/* Display the avatar URL for debugging */}
-          {__DEV__ && (
-            <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10, marginTop: 4, maxWidth: 250 }}>
-              {profileImage?.imageUrl ? profileImage.imageUrl.substring(0, 30) : 
-               user?.avatar ? user.avatar.substring(0, 30) : 'No Avatar'}...
-            </Text>
-          )}
-          
           <Button
             mode="contained"
             onPress={handleChangeProfileImage}
@@ -367,9 +360,7 @@ const ProfileScreen = ({ navigation }) => {
           </Button>
         </View>
         <Text style={styles.name}>{user?.firstName} {user?.lastName}</Text>
-        <Text style={styles.role}>
-          {user?.role === 'guide' ? 'Professional Tour Guide' : 'Tourist'}
-        </Text>
+        <Text style={styles.role}>Tourist</Text>
       </View>
 
       {networkError && (
@@ -398,65 +389,20 @@ const ProfileScreen = ({ navigation }) => {
             description={user?.phoneNumber || 'Not specified'}
             left={props => <List.Icon {...props} icon="phone" />}
           />
-          {user?.role === 'guide' && (
-            <>
-              <Divider />
-              <List.Item
-                title="Location"
-                description={user?.guide?.serviceAreas?.join(', ') || 'Not specified'}
-                left={props => <List.Icon {...props} icon="map-marker" />}
-              />
-            </>
-          )}
         </List.Section>
 
-        {user?.role === 'guide' && (
-          <>
-            <List.Section>
-              <List.Subheader>Professional Information</List.Subheader>
-              <Card style={styles.bioCard}>
-                <Card.Content>
-                  <Text style={styles.bioTitle}>About Me</Text>
-                  <Text style={styles.bioText}>
-                    {user?.guide?.bio || 'No bio available. Add a brief description about yourself and your experience as a tour guide.'}
-                  </Text>
-                </Card.Content>
-              </Card>
-              <List.Item
-                title="Experience"
-                description={`${user?.guide?.experience || 0} years`}
-                left={props => <List.Icon {...props} icon="briefcase" />}
-              />
-              <Divider />
-              <List.Item
-                title="Languages"
-                description={user?.guide?.languages?.join(', ') || 'Not specified'}
-                left={props => <List.Icon {...props} icon="translate" />}
-              />
-              <Divider />
-              <List.Item
-                title="Expertise"
-                description={user?.guide?.expertise?.join(', ') || 'Not specified'}
-                left={props => <List.Icon {...props} icon="star" />}
-              />
-            </List.Section>
-          </>
-        )}
-
-        {user?.role === 'tourist' && (
-          <List.Section>
-            <List.Subheader>Tourist Information</List.Subheader>
-            <Card style={styles.bioCard}>
-              <Card.Content>
-                <Text style={styles.bioTitle}>Preferences</Text>
-                <Text style={styles.bioText}>
-                  {user?.tourist?.preferences?.interests?.join(', ') || 
-                   'No preferences set. You can add your travel interests and preferences.'}
-                </Text>
-              </Card.Content>
-            </Card>
-          </List.Section>
-        )}
+        <List.Section>
+          <List.Subheader>Tourist Information</List.Subheader>
+          <Card style={styles.bioCard}>
+            <Card.Content>
+              <Text style={styles.bioTitle}>Preferences</Text>
+              <Text style={styles.bioText}>
+                {user?.tourist?.preferences?.interests?.join(', ') || 
+                'No preferences set. You can add your travel interests and preferences.'}
+              </Text>
+            </Card.Content>
+          </Card>
+        </List.Section>
 
         <View style={styles.buttonContainer}>
           <Button
@@ -465,7 +411,7 @@ const ProfileScreen = ({ navigation }) => {
             style={styles.editButton}
             disabled={networkError}
           >
-            {user?.role === 'guide' ? 'Edit Guide Profile' : 'Edit Profile'}
+            Edit Profile
           </Button>
           <Button
             mode="outlined"

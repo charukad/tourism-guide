@@ -55,6 +55,7 @@ export const API_ENDPOINTS = {
     FEATURED: `${API_URL}/guides/featured`,
     VERIFY: (id) => `${API_URL}/guides/${id}/verify`,
     PORTFOLIO: (id) => `${API_URL}/guides/${id}/portfolio`,
+    PROFILE: `${API_URL}/guides/profile`,
   },
   
   // Vehicle owner endpoints

@@ -166,7 +166,6 @@ const RegisterScreen = ({ navigation }) => {
                 style={styles.input}
                 error={touched.password && errors.password}
                 textContentType="none"
-                autoComplete="off"
                 autoCapitalize="none"
                 autoCorrect={false}
               />
@@ -183,7 +182,6 @@ const RegisterScreen = ({ navigation }) => {
                 style={styles.input}
                 error={touched.confirmPassword && errors.confirmPassword}
                 textContentType="none"
-                autoComplete="off"
                 autoCapitalize="none"
                 autoCorrect={false}
               />

@@ -8,6 +8,11 @@ const GuideSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    email: {
+      type: String,
+      trim: true,
+      index: true, // Add index for email-based lookups
+    },
     nic: {
       // National Identity Card
       type: String,
@@ -79,7 +84,7 @@ const GuideSchema = new mongoose.Schema(
     },
     averageRating: {
       type: Number,
-      min: [1, 'Rating must be at least 1'],
+      min: [0, 'Rating cannot be negative'],
       max: [5, 'Rating cannot be more than 5'],
       default: 0,
     },

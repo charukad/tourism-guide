@@ -152,7 +152,22 @@ const authSlice = createSlice({
       state.authError = null;
     },
     updateProfile: (state, action) => {
-      state.user = { ...state.user, ...action.payload };
+      if (action.payload.guide) {
+        // If we're updating guide info, make sure we properly merge it
+        state.user = {
+          ...state.user,
+          guide: {
+            ...(state.user?.guide || {}),
+            ...action.payload.guide
+          }
+        };
+      } else if (action.payload._id && action.payload.email) {
+        // We received a full user object from the API, replace the entire user
+        state.user = action.payload;
+      } else {
+        // For other profile updates
+        state.user = { ...state.user, ...action.payload };
+      }
     },
   },
   extraReducers: (builder) => {

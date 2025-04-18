@@ -5,16 +5,22 @@ const guidesController = require('../../controllers/guides');
 const { protect, authorize } = require('../../middleware/auth');
 const validationMiddleware = require('../../middleware/validation');
 const { uploadMultipleDocuments } = require('../../middleware/upload');
+const {
+  getGuideDetails,
+  updateGuideDetails,
+  getGuideDetailsById,
+  getAllGuides
+} = require('../../controllers/guideDetailsController');
 
 // Public routes
-router.get('/', guidesController.getGuides);
-router.get('/:id', guidesController.getGuideById);
+router.get('/', getAllGuides);
+router.get('/:id', getGuideDetailsById);
 
 // Protected routes - Guide only
 router.use(protect);
 
 // Guide profile
-router.get('/profile', authorize('guide'), guidesController.getGuideProfile);
+router.get('/profile', getGuideDetails);
 
 router.put(
   '/profile',

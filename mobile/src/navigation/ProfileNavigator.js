@@ -3,34 +3,41 @@ import { createStackNavigator } from '@react-navigation/stack';
 import ReviewNavigator from './ReviewNavigator';
 
 // Import screens
-import ProfileScreen from '../screens/profile/ProfileScreen';
-import EditProfileScreen from '../screens/profile/EditProfileScreen';
+import GuideProfileScreen from '../screens/guide/ProfileScreen';
+import TouristProfileScreen from '../screens/tourist/ProfileScreen';
+import GuideEditProfileScreen from '../screens/guide/EditProfileScreen';
+import TouristEditProfileScreen from '../screens/profile/EditProfileScreen';
 import SettingsScreen from '../screens/profile/SettingsScreen';
 import NotificationsScreen from '../screens/notifications/NotificationsScreen';
 import MyBookingsScreen from '../screens/bookings/MyBookingsScreen';
 
 const Stack = createStackNavigator();
 
-const ProfileNavigator = () => {
+const ProfileNavigator = ({ route }) => {
+  // Determine which screens to use based on user role
+  const userRole = route?.params?.userRole || 'tourist';
+  const ProfileComponent = userRole === 'guide' ? GuideProfileScreen : TouristProfileScreen;
+  const EditProfileComponent = userRole === 'guide' ? GuideEditProfileScreen : TouristEditProfileScreen;
+
   return (
     <Stack.Navigator
-      initialRouteName="UserProfile"
+      initialRouteName="ProfileMain"
       screenOptions={{
-        headerBackTitleVisible: false,
+        headerShown: false,
       }}
     >
-      <Stack.Screen
-        name="UserProfile"
-        component={ProfileScreen}
-        options={{ 
-          title: 'My Profile',
-        }}
-      />
-      <Stack.Screen
-        name="EditProfile"
-        component={EditProfileScreen}
-        options={{ 
-          title: 'Edit Profile',
+      <Stack.Screen name="ProfileMain" component={ProfileComponent} />
+      <Stack.Screen 
+        name="EditProfile" 
+        component={EditProfileComponent} 
+        options={{
+          headerShown: true,
+          title: userRole === 'guide' ? 'Edit Guide Profile' : 'Edit Profile',
+          headerStyle: {
+            backgroundColor: '#f8f8f8',
+            elevation: 0,
+            shadowOpacity: 0,
+          },
         }}
       />
       <Stack.Screen
@@ -55,10 +62,9 @@ const ProfileNavigator = () => {
         }}
       />
       <Stack.Screen 
-  name="Reviews" 
-  component={ReviewNavigator} 
-/>
-      
+        name="Reviews" 
+        component={ReviewNavigator} 
+      />
     </Stack.Navigator>
   );
 };

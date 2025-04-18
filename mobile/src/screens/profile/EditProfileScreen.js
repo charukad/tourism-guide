@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
-import { Text, TextInput, Button, Avatar, Snackbar } from 'react-native-paper';
+import { Text, TextInput, Button, Avatar, Snackbar, HelperText } from 'react-native-paper';
 import { useSelector, useDispatch } from 'react-redux';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -9,6 +9,8 @@ import { COLORS, spacing } from '../../constants/theme';
 import Loading from '../../components/common/Loading';
 import api from '../../api/axios';
 import { API_ENDPOINTS } from '../../constants/api';
+import ImageUploader from '../../components/common/ImageUploader';
+import { updateProfile, uploadProfileImage } from '../../store/slices/profileSlice';
 
 // Validation schema
 const ProfileSchema = Yup.object().shape({
@@ -18,140 +20,64 @@ const ProfileSchema = Yup.object().shape({
     .matches(/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/, 'Phone number is not valid')
     .optional(),
   preferredLanguage: Yup.string().oneOf(['en', 'si', 'ta']).required('Preferred language is required'),
+  bio: Yup.string().max(200, 'Bio must be less than 200 characters'),
 });
 
 const EditProfileScreen = ({ navigation }) => {
-  const { user } = useSelector((state) => state.auth);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const { user, loading } = useSelector((state) => state.profile);
   const [imageUploading, setImageUploading] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [profileImage, setProfileImage] = useState(user?.profileImage || null);
 
   if (!user) {
     return <Loading />;
   }
 
-  const handleUpdateProfile = async (values) => {
+  const handleSaveProfile = async (values) => {
     try {
-      setLoading(true);
-      
-      const response = await api.put(API_ENDPOINTS.USERS.UPDATE_PROFILE, values);
-      
-      setSnackbarMessage('Profile updated successfully');
-      setSnackbarVisible(true);
-      
-      // Navigate back after a short delay
-      setTimeout(() => {
-        navigation.goBack();
-      }, 1500);
+      await dispatch(updateProfile(values)).unwrap();
+      navigation.goBack();
     } catch (error) {
-      console.error('Error updating profile:', error);
-      setSnackbarMessage(error.response?.data?.message || 'Failed to update profile');
-      setSnackbarVisible(true);
-    } finally {
-      setLoading(false);
+      console.error('Failed to update profile:', error);
     }
   };
 
-  const handleImagePick = async () => {
-    try {
-      // Request permissions
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permission Required',
-          'Sorry, we need camera roll permissions to make this work!'
-        );
-        return;
-      }
-      
-      // Launch image picker
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
-      });
-      
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const selectedImage = result.assets[0];
-        
-        // Upload image to server
-        await uploadProfileImage(selectedImage.uri);
-      }
-    } catch (error) {
-      console.error('Error picking image:', error);
-      setSnackbarMessage('Failed to pick image');
-      setSnackbarVisible(true);
+  const handleImageUploadSuccess = (data) => {
+    setImageUploading(false);
+    if (data && data.imageUrl) {
+      dispatch(uploadProfileImage(data.imageUrl));
     }
   };
 
-  const uploadProfileImage = async (uri) => {
-    try {
-      setImageUploading(true);
-      
-      // Create form data
-      const formData = new FormData();
-      const filename = uri.split('/').pop();
-      const match = /\.(\w+)$/.exec(filename);
-      const type = match ? `image/${match[1]}` : 'image';
-      
-      formData.append('profileImage', {
-        uri,
-        name: filename,
-        type,
-      });
-      
-      // Upload to server
-      const response = await api.post(
-        API_ENDPOINTS.USERS.UPLOAD_AVATAR,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-      
-      // Update local state
-      setProfileImage(response.data.data.profileImage);
-      setSnackbarMessage('Profile picture updated successfully');
-      setSnackbarVisible(true);
-    } catch (error) {
-      console.error('Error uploading profile image:', error);
-      setSnackbarMessage('Failed to upload profile image');
-      setSnackbarVisible(true);
-    } finally {
-      setImageUploading(false);
-    }
+  const handleImageUploadError = (error) => {
+    setImageUploading(false);
+    console.error('Image upload error:', error);
   };
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.avatarContainer} onPress={handleImagePick} disabled={imageUploading}>
-          {profileImage ? (
-            <Avatar.Image size={120} source={{ uri: profileImage }} />
+        <TouchableOpacity style={styles.avatarContainer} disabled={imageUploading}>
+          {user.profileImage ? (
+            <Avatar.Image size={120} source={{ uri: user.profileImage }} />
           ) : (
             <Avatar.Text
               size={120}
               label={`${user.firstName.charAt(0)}${user.lastName.charAt(0)}`}
             />
           )}
-          
-          {imageUploading ? (
-            <View style={styles.uploadingOverlay}>
-              <Text style={styles.uploadingText}>Uploading...</Text>
-            </View>
-          ) : (
-            <View style={styles.editAvatarButton}>
-              <Text style={styles.editAvatarText}>Edit</Text>
-            </View>
-          )}
         </TouchableOpacity>
       </View>
+
+      <ImageUploader
+        endpoint={API_ENDPOINTS.UPLOAD_IMAGE}
+        initialImage={user?.profileImage}
+        onSuccess={handleImageUploadSuccess}
+        onError={handleImageUploadError}
+        buttonText="Update Profile Picture"
+        style={styles.imageUploader}
+      />
 
       <Formik
         initialValues={{
@@ -159,9 +85,10 @@ const EditProfileScreen = ({ navigation }) => {
           lastName: user.lastName || '',
           phoneNumber: user.phoneNumber || '',
           preferredLanguage: user.preferredLanguage || 'en',
+          bio: user.bio || '',
         }}
         validationSchema={ProfileSchema}
-        onSubmit={handleUpdateProfile}
+        onSubmit={handleSaveProfile}
       >
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
           <View style={styles.formContainer}>
@@ -174,7 +101,7 @@ const EditProfileScreen = ({ navigation }) => {
               error={touched.firstName && errors.firstName}
             />
             {touched.firstName && errors.firstName && (
-              <Text style={styles.errorText}>{errors.firstName}</Text>
+              <HelperText type="error">{errors.firstName}</HelperText>
             )}
 
             <TextInput
@@ -186,7 +113,7 @@ const EditProfileScreen = ({ navigation }) => {
               error={touched.lastName && errors.lastName}
             />
             {touched.lastName && errors.lastName && (
-              <Text style={styles.errorText}>{errors.lastName}</Text>
+              <HelperText type="error">{errors.lastName}</HelperText>
             )}
 
             <TextInput
@@ -199,7 +126,7 @@ const EditProfileScreen = ({ navigation }) => {
               error={touched.phoneNumber && errors.phoneNumber}
             />
             {touched.phoneNumber && errors.phoneNumber && (
-              <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+              <HelperText type="error">{errors.phoneNumber}</HelperText>
             )}
 
             <Text style={styles.labelText}>Preferred Language</Text>
@@ -256,6 +183,20 @@ const EditProfileScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
 
+            <TextInput
+              label="Bio"
+              value={values.bio}
+              onChangeText={handleChange('bio')}
+              onBlur={handleBlur('bio')}
+              style={styles.input}
+              multiline
+              numberOfLines={4}
+              error={touched.bio && errors.bio}
+            />
+            {touched.bio && errors.bio && (
+              <HelperText type="error">{errors.bio}</HelperText>
+            )}
+
             <View style={styles.buttonsContainer}>
               <Button
                 mode="outlined"
@@ -271,7 +212,7 @@ const EditProfileScreen = ({ navigation }) => {
                 style={styles.saveButton}
                 onPress={handleSubmit}
                 loading={loading}
-                disabled={loading}
+                disabled={loading || imageUploading}
               >
                 Save Changes
               </Button>
@@ -304,34 +245,8 @@ const styles = StyleSheet.create({
   avatarContainer: {
     position: 'relative',
   },
-  uploadingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: COLORS.background + '80',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 60,
-  },
-  uploadingText: {
-    color: COLORS.primary,
-    fontSize: 14,
-  },
-  editAvatarButton: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    backgroundColor: COLORS.accent,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: spacing.sm,
-  },
-  editAvatarText: {
-    color: COLORS.background,
-    fontSize: 12,
-    fontWeight: 'bold',
+  imageUploader: {
+    marginBottom: 24,
   },
   formContainer: {
     padding: spacing.lg,
@@ -339,11 +254,6 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: spacing.sm,
     backgroundColor: COLORS.surface,
-  },
-  errorText: {
-    color: COLORS.error,
-    fontSize: 12,
-    marginBottom: spacing.sm,
   },
   labelText: {
     fontSize: 16,
