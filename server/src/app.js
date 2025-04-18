@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const mongoose = require('mongoose');
 const http = require('http');
 const path = require('path');
+const fileUpload = require('express-fileupload');
 
 // Load environment variables with an absolute path
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
@@ -46,6 +47,10 @@ app.use(helmet()); // Security headers
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json()); // Parse JSON request body
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request body
+app.use(fileUpload({
+  useTempFiles: true,
+  tempFileDir: '/tmp/',
+}));
 
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -55,6 +60,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // API routes
 app.use('/api', routes);
+app.use('/api/profile', require('./routes/profileImageRoutes'));
 
 // Error handling middleware
 app.use(errorMiddleware);

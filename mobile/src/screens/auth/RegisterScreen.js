@@ -165,6 +165,10 @@ const RegisterScreen = ({ navigation }) => {
                 secureTextEntry
                 style={styles.input}
                 error={touched.password && errors.password}
+                textContentType="none"
+                autoComplete="off"
+                autoCapitalize="none"
+                autoCorrect={false}
               />
               {touched.password && errors.password && (
                 <Text style={styles.errorText}>{errors.password}</Text>
@@ -178,6 +182,10 @@ const RegisterScreen = ({ navigation }) => {
                 secureTextEntry
                 style={styles.input}
                 error={touched.confirmPassword && errors.confirmPassword}
+                textContentType="none"
+                autoComplete="off"
+                autoCapitalize="none"
+                autoCorrect={false}
               />
               {touched.confirmPassword && errors.confirmPassword && (
                 <Text style={styles.errorText}>{errors.confirmPassword}</Text>
@@ -216,7 +224,7 @@ const RegisterScreen = ({ navigation }) => {
                 loading={isLoading}
                 disabled={isLoading}
               >
-                Create Account sdsdfs
+                Create Account
               </Button>
             </View>
           )}

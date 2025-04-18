@@ -7,6 +7,7 @@ import GuideDashboardScreen from '../screens/guide/DashboardScreen';
 import GuideBookingsScreen from '../screens/guide/BookingsScreen';
 import GuideReviewsScreen from '../screens/guide/ReviewsScreen';
 import GuideEarningsScreen from '../screens/guide/EarningsScreen';
+import ProfileScreen from '../screens/guide/ProfileScreen';
 
 // Import theme
 import { COLORS } from '../constants/theme';
@@ -70,6 +71,15 @@ const GuideDashboardNavigator = () => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="account-balance-wallet" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="person" color={color} size={size} />
           ),
         }}
       />

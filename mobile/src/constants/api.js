@@ -19,6 +19,13 @@ export const API_ENDPOINTS = {
     ME: `${API_URL}/auth/me`,
   },
   
+  // Profile endpoints
+  PROFILE: {
+    UPLOAD_IMAGE: `${API_URL}/profile/image`,
+    GET_IMAGES: `${API_URL}/profile/images`,
+    DELETE_IMAGE: (id) => `${API_URL}/profile/image/${id}`,
+  },
+  
   // User endpoints
   USERS: {
     PROFILE: `${API_URL}/users/profile`,
